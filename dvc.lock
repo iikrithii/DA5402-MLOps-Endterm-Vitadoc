@@ -234,3 +234,94 @@ stages:
       hash: md5
       md5: f15181c8b880aab23ea67f6c97af8646
       size: 170
+  train_thyroid:
+    cmd: python src/models/train_thyroid.py --model both
+    deps:
+    - path: data/processed/thyroid_engineered.csv
+      hash: md5
+      md5: 8aad7db613c7619e0a0eae54009227b3
+      size: 511376
+    - path: params.yaml
+      hash: md5
+      md5: 9c9649aab1a2d19170118c184ea8f9ce
+      size: 2684
+    - path: src/models/train_thyroid.py
+      hash: md5
+      md5: 36c13cdd8a2b3daf47b39fb470b83b9a
+      size: 16335
+    params:
+      params.yaml:
+        thyroid:
+          data_path: data/processed/thyroid_engineered.csv
+          model_out: models/thyroid_model.pkl
+          metrics_out: reports/thyroid_metrics.json
+          reports_dir: reports
+          experiment_name: VitaDoc-Thyroid
+          registered_model: VitaDoc-Thyroid
+          dataset_version: v7-eda
+          test_size: 0.2
+          random_state: 42
+          active_models: both
+          target_col: label
+          features:
+          - age
+          - sex
+          - on_thyroxine
+          - TSH
+          - T3
+          - TT4
+          - T4U
+          - FTI
+          - query_hypothyroid
+          - query_hyperthyroid
+          - on_antithyroid_medication
+          - sick
+          - pregnant
+          - thyroid_surgery
+          - goitre
+          - tumor
+          - tsh_t3_ratio
+          xgb:
+            max_combinations: 27
+            search_grid:
+              n_estimators:
+              - 100
+              - 200
+              - 300
+              max_depth:
+              - 3
+              - 5
+              - 6
+              learning_rate:
+              - 0.05
+              - 0.1
+            fixed:
+              random_state: 42
+              num_class: 3
+              objective: multi:softprob
+              eval_metric: mlogloss
+              use_label_encoder: false
+              tree_method: hist
+          rf:
+            max_combinations: 9
+            search_grid:
+              n_estimators:
+              - 100
+              - 200
+              - 300
+              max_depth:
+              - 5
+              - 10
+              - 20
+            fixed:
+              random_state: 42
+              n_jobs: -1
+    outs:
+    - path: models/thyroid_model.pkl
+      hash: md5
+      md5: a1c5560b129ba51e467a6b165d809871
+      size: 457117
+    - path: reports/thyroid_metrics.json
+      hash: md5
+      md5: ba29e945f48fc30724cd2451a9be3bf2
+      size: 189

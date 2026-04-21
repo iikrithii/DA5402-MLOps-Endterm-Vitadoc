@@ -1,0 +1,7 @@
+{
+  "accuracy": 0.8888888888888888,
+  "macro_f1": 0.6979759657386534,
+  "model_type": "RandomForest",
+  "run_name": "thy_rf_smote_ne100_d5",
+  "run_id": "fa060684fbd54bb3a052613594a2ae54"
+}

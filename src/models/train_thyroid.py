@@ -148,7 +148,10 @@ def log_confusion_matrix(y_test, y_pred, run_name: str, reports_dir: str):
     path = os.path.join(reports_dir, f"thyroid_cm_{run_name}.png")
     plt.savefig(path, dpi=100)
     plt.close()
-    mlflow.log_artifact(path)
+    try:
+        mlflow.log_artifact(path)
+    except Exception as e:
+        log.warning("Could not log confusion matrix artifact to MLflow: %s", e)
 
 
 def log_classification_report(y_test, y_pred, run_name: str, reports_dir: str):
@@ -164,7 +167,10 @@ def log_classification_report(y_test, y_pred, run_name: str, reports_dir: str):
         fh.write(
             classification_report(y_test, y_pred, target_names=CLASS_NAMES)
         )
-    mlflow.log_artifact(path)
+    try:
+        mlflow.log_artifact(path)
+    except Exception as e:
+        log.warning("Could not log classification report artifact to MLflow: %s", e)
 
 
 def log_feature_importances(pipeline: Pipeline, feature_names: List[str]):
@@ -227,9 +233,9 @@ def run_one_experiment(
     with mlflow.start_run(run_name=run_name):
 
         if model_type == "XGBoost":
-            mlflow.xgboost.autolog(silent=True)
+            mlflow.xgboost.autolog(silent=True, log_models=False)
         else:
-            mlflow.sklearn.autolog(silent=True)
+            mlflow.sklearn.autolog(silent=True, log_models=False)
 
         mlflow.log_param("model_type",      model_type)
         mlflow.log_param("dataset_version", cfg["dataset_version"])
@@ -475,7 +481,7 @@ def main(model_override: str = None):
             "Registration failed — model saved at %s. Error: %s",
             cfg["model_out"], e,
         )
-        raise
+        log.warning("Continuing without MLflow registry promotion for this run.")
 
 
 if __name__ == "__main__":
