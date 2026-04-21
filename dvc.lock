@@ -71,3 +71,23 @@ stages:
       hash: md5
       md5: 8b8a269748d25d62d3f26f0c282e9234
       size: 40839
+  baselines:
+    cmd: python src/features/preprocess.py baselines
+    deps:
+    - path: data/processed/ckd_clean.csv
+      hash: md5
+      md5: 8b8a269748d25d62d3f26f0c282e9234
+      size: 40839
+    - path: data/processed/thyroid_clean.csv
+      hash: md5
+      md5: 55877d1945405c59bda2d15628c6fcd9
+      size: 448610
+    - path: src/features/preprocess.py
+      hash: md5
+      md5: 8e0327c750e0b7b1cd45ee19f924924a
+      size: 9680
+    outs:
+    - path: data/baseline_stats.json
+      hash: md5
+      md5: a39c0c869dbca4844c4b839be9430d89
+      size: 8339
