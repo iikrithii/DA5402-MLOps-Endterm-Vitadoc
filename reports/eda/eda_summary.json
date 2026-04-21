@@ -1,0 +1,137 @@
+{
+  "ckd": {
+    "rows": 400,
+    "cols": 26,
+    "class_balance": {
+      "1": 250,
+      "0": 150
+    },
+    "missing_pct": {
+      "age": 2.2,
+      "bp": 3.0,
+      "sg": 11.8,
+      "al": 11.5,
+      "su": 12.2,
+      "rbc": 38.0,
+      "pc": 16.2,
+      "pcc": 1.0,
+      "ba": 1.0,
+      "bgr": 11.0,
+      "bu": 4.8,
+      "sc": 4.2,
+      "sod": 21.8,
+      "pot": 22.0,
+      "hemo": 13.0,
+      "pcv": 17.8,
+      "wc": 26.5,
+      "rc": 32.8,
+      "htn": 0.5,
+      "dm": 0.5,
+      "cad": 0.5,
+      "appet": 0.2,
+      "pe": 0.2,
+      "ane": 0.2,
+      "classification": 0.0,
+      "kidney_stress": 16.5
+    },
+    "feature_means_by_class": {
+      "sc": {
+        "ckd_mean": 4.415,
+        "notckd_mean": 0.869
+      },
+      "bu": {
+        "ckd_mean": 72.389,
+        "notckd_mean": 32.799
+      },
+      "hemo": {
+        "ckd_mean": 10.648,
+        "notckd_mean": 15.188
+      },
+      "sod": {
+        "ckd_mean": 133.902,
+        "notckd_mean": 141.731
+      },
+      "pot": {
+        "ckd_mean": 4.878,
+        "notckd_mean": 4.338
+      },
+      "bgr": {
+        "ckd_mean": 175.42,
+        "notckd_mean": 107.722
+      },
+      "pcv": {
+        "ckd_mean": 32.94,
+        "notckd_mean": 46.336
+      },
+      "wc": {
+        "ckd_mean": 9069.536,
+        "notckd_mean": 7705.594
+      },
+      "rc": {
+        "ckd_mean": 3.945,
+        "notckd_mean": 5.379
+      }
+    }
+  },
+  "thyroid": {
+    "rows": 4092,
+    "cols": 28,
+    "class_balance": {
+      "Normal": 3711,
+      "Hypothyroid": 291,
+      "Hyperthyroid": 90
+    },
+    "missing_pct": {
+      "age": 0.0,
+      "sex": 4.1,
+      "on_thyroxine": 0.0,
+      "query_on_thyroxine": 0.0,
+      "on_antithyroid_medication": 0.0,
+      "sick": 0.0,
+      "pregnant": 0.0,
+      "thyroid_surgery": 0.0,
+      "I131_treatment": 0.0,
+      "query_hypothyroid": 0.0,
+      "query_hyperthyroid": 0.0,
+      "lithium": 0.0,
+      "goitre": 0.0,
+      "tumor": 0.0,
+      "hypopituitary": 0.0,
+      "psych": 0.0,
+      "TSH_measured": 0.0,
+      "TSH": 7.8,
+      "T3_measured": 0.0,
+      "T3": 18.8,
+      "TT4_measured": 0.0,
+      "TT4": 4.3,
+      "T4U_measured": 0.0,
+      "T4U": 8.6,
+      "FTI_measured": 0.0,
+      "FTI": 8.6,
+      "label": 0.0,
+      "tsh_t3_ratio": 21.2
+    },
+    "feature_means_by_class": {
+      "TSH": {
+        "Normal_mean": 5.088,
+        "Hypothyroid_mean": 39.234,
+        "Hyperthyroid_mean": 0.411
+      },
+      "T3": {
+        "Normal_mean": 2.014,
+        "Hypothyroid_mean": 1.475,
+        "Hyperthyroid_mean": 3.925
+      },
+      "TT4": {
+        "Normal_mean": 108.328,
+        "Hypothyroid_mean": 72.915,
+        "Hyperthyroid_mean": 187.022
+      },
+      "FTI": {
+        "Normal_mean": 110.481,
+        "Hypothyroid_mean": 73.247,
+        "Hyperthyroid_mean": 199.494
+      }
+    }
+  }
+}

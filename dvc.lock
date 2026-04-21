@@ -115,3 +115,24 @@ stages:
       hash: md5
       md5: 8aad7db613c7619e0a0eae54009227b3
       size: 511376
+  eda:
+    cmd: python src/features/eda.py
+    deps:
+    - path: data/processed/ckd_engineered.csv
+      hash: md5
+      md5: 6e651147edbf7776e0eaf6e13a7e9faa
+      size: 47525
+    - path: data/processed/thyroid_engineered.csv
+      hash: md5
+      md5: 8aad7db613c7619e0a0eae54009227b3
+      size: 511376
+    - path: src/features/eda.py
+      hash: md5
+      md5: 64ae22d38a262befd2b42c3d32872421
+      size: 11905
+    outs:
+    - path: reports/eda
+      hash: md5
+      md5: b05869682366d45efa688ba4ec409971.dir
+      size: 434352
+      nfiles: 9
