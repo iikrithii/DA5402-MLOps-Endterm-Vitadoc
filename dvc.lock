@@ -91,3 +91,27 @@ stages:
       hash: md5
       md5: a39c0c869dbca4844c4b839be9430d89
       size: 8339
+  engineer:
+    cmd: python src/features/engineer.py both
+    deps:
+    - path: data/processed/ckd_clean.csv
+      hash: md5
+      md5: 8b8a269748d25d62d3f26f0c282e9234
+      size: 40839
+    - path: data/processed/thyroid_clean.csv
+      hash: md5
+      md5: 55877d1945405c59bda2d15628c6fcd9
+      size: 448610
+    - path: src/features/engineer.py
+      hash: md5
+      md5: c0e359fa8e2418cea614e9c17a4ce70d
+      size: 4986
+    outs:
+    - path: data/processed/ckd_engineered.csv
+      hash: md5
+      md5: 6e651147edbf7776e0eaf6e13a7e9faa
+      size: 47525
+    - path: data/processed/thyroid_engineered.csv
+      hash: md5
+      md5: 8aad7db613c7619e0a0eae54009227b3
+      size: 511376
