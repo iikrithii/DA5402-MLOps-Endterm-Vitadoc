@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+*.egg-info/
+.dvc/cache/
+data/raw/
+data/processed/
+models/
+logs/
+mlflow/
+dvc-storage/

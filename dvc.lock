@@ -31,3 +31,43 @@ stages:
       hash: md5
       md5: 1f0c77d28ea3f95febed6fe91cae1f22
       size: 6816
+  preprocess_thyroid:
+    cmd: python src/features/preprocess.py thyroid
+    deps:
+    - path: data/raw/thyroid.csv
+      hash: md5
+      md5: 598ca9abab0426cfa4e805e237cdfc3d
+      size: 353238
+    - path: src/features/preprocess.py
+      hash: md5
+      md5: 8e0327c750e0b7b1cd45ee19f924924a
+      size: 9680
+    - path: src/features/validate.py
+      hash: md5
+      md5: 1f0c77d28ea3f95febed6fe91cae1f22
+      size: 6816
+    outs:
+    - path: data/processed/thyroid_clean.csv
+      hash: md5
+      md5: 55877d1945405c59bda2d15628c6fcd9
+      size: 448610
+  preprocess_ckd:
+    cmd: python src/features/preprocess.py ckd
+    deps:
+    - path: data/raw/ckd.csv
+      hash: md5
+      md5: b62214a102c6b33779c9d89cd30ef5d6
+      size: 48293
+    - path: src/features/preprocess.py
+      hash: md5
+      md5: 8e0327c750e0b7b1cd45ee19f924924a
+      size: 9680
+    - path: src/features/validate.py
+      hash: md5
+      md5: 1f0c77d28ea3f95febed6fe91cae1f22
+      size: 6816
+    outs:
+    - path: data/processed/ckd_clean.csv
+      hash: md5
+      md5: 8b8a269748d25d62d3f26f0c282e9234
+      size: 40839
