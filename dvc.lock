@@ -16,3 +16,18 @@ stages:
       hash: md5
       md5: 598ca9abab0426cfa4e805e237cdfc3d
       size: 353238
+  validate:
+    cmd: python src/features/validate.py both
+    deps:
+    - path: data/raw/ckd.csv
+      hash: md5
+      md5: b62214a102c6b33779c9d89cd30ef5d6
+      size: 48293
+    - path: data/raw/thyroid.csv
+      hash: md5
+      md5: 598ca9abab0426cfa4e805e237cdfc3d
+      size: 353238
+    - path: src/features/validate.py
+      hash: md5
+      md5: 1f0c77d28ea3f95febed6fe91cae1f22
+      size: 6816
