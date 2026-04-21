@@ -1,0 +1,17 @@
+name: vitadoc
+
+conda_env: conda.yaml
+
+entry_points:
+  train_ckd:
+    parameters:
+      model: {type: str, default: "both"}
+    command: "python src/models/train_ckd.py --model {model}"
+
+  train_thyroid:
+    parameters:
+      model: {type: str, default: "both"}
+    command: "python src/models/train_thyroid.py --model {model}"
+
+  evaluate:
+    command: "python src/models/evaluate_all.py"

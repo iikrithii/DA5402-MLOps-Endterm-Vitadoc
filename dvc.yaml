@@ -61,3 +61,45 @@ stages:
     outs:
       - reports/eda:
           cache: false
+
+  train_ckd:
+    cmd: python src/models/train_ckd.py --model ${ckd.active_models}
+    deps:
+      - data/processed/ckd_engineered.csv
+      - src/models/train_ckd.py
+      - params.yaml
+    params:
+      - params.yaml:
+          - ckd
+    outs:
+      - models/ckd_model.pkl:
+          cache: true
+    metrics:
+      - reports/ckd_metrics.json:
+          cache: false
+
+  train_thyroid:
+    cmd: python src/models/train_thyroid.py --model ${thyroid.active_models}
+    deps:
+      - data/processed/thyroid_engineered.csv
+      - src/models/train_thyroid.py
+      - params.yaml
+    params:
+      - params.yaml:
+          - thyroid
+    outs:
+      - models/thyroid_model.pkl:
+          cache: true
+    metrics:
+      - reports/thyroid_metrics.json:
+          cache: false
+
+  evaluate_all:
+    cmd: python src/models/evaluate_all.py
+    deps:
+      - reports/ckd_metrics.json
+      - reports/thyroid_metrics.json
+      - src/models/evaluate_all.py
+    outs:
+      - reports/comparison.md:
+          cache: false

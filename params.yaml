@@ -1,0 +1,135 @@
+ckd:
+  # Data paths
+  data_path:        "data/processed/ckd_engineered.csv"
+  model_out:        "models/ckd_model.pkl"
+  metrics_out:      "reports/ckd_metrics.json"
+  reports_dir:      "reports"
+
+  # MLflow
+  experiment_name:  "VitaDoc-CKD"
+  registered_model: "VitaDoc-CKD"
+  dataset_version:  "v7-eda"
+
+  # Train/test split
+  test_size:    0.2
+  random_state: 42
+
+  # Which model families to train: "xgb", "rf", or "both"
+  active_models: "both"
+
+  # Features
+  target_col: "classification"
+  features:
+    - age
+    - bp
+    - bgr
+    - bu
+    - sc
+    - sod
+    - pot
+    - hemo
+    - pcv
+    - wc
+    - rc
+    - sg
+    - al
+    - su
+    - rbc
+    - pc
+    - pcc
+    - ba
+    - htn
+    - dm
+    - cad
+    - appet
+    - pe
+    - ane
+    - kidney_stress
+
+  # XGBoost hyperparameter search
+  xgb:
+    max_combinations: 12
+    search_grid:
+      n_estimators:  [100, 200, 300]
+      max_depth:     [3, 4, 6]
+      learning_rate: [0.05, 0.1, 0.2]
+    fixed:
+      random_state:      42
+      eval_metric:       "logloss"
+      use_label_encoder: false
+      tree_method:       "hist"
+
+  # Random Forest hyperparameter search
+  rf:
+    max_combinations: 9
+    search_grid:
+      n_estimators: [100, 200, 300]
+      max_depth:    [5, 10, 20]
+    fixed:
+      random_state: 42
+      n_jobs:       -1
+
+thyroid:
+  # Data paths
+  data_path:        "data/processed/thyroid_engineered.csv"
+  model_out:        "models/thyroid_model.pkl"
+  metrics_out:      "reports/thyroid_metrics.json"
+  reports_dir:      "reports"
+
+  # MLflow
+  experiment_name:  "VitaDoc-Thyroid"
+  registered_model: "VitaDoc-Thyroid"
+  dataset_version:  "v7-eda"
+
+  # Train/test split
+  test_size:    0.2
+  random_state: 42
+
+  # Which model families to train: "xgb", "rf", or "both"
+  active_models: "both"
+
+  # Features
+  target_col: "label"
+  features:
+    - age
+    - sex
+    - on_thyroxine
+    - TSH
+    - T3
+    - TT4
+    - T4U
+    - FTI
+    - query_hypothyroid
+    - query_hyperthyroid
+    - on_antithyroid_medication
+    - sick
+    - pregnant
+    - thyroid_surgery
+    - goitre
+    - tumor
+    - tsh_t3_ratio
+
+  # XGBoost hyperparameter search
+  xgb:
+    max_combinations: 12
+    search_grid:
+      n_estimators:  [100, 200, 300]
+      max_depth:     [3, 5, 6]
+      learning_rate: [0.05, 0.1]
+    fixed:
+      random_state:      42
+      num_class:         3
+      objective:         "multi:softprob"
+      eval_metric:       "mlogloss"
+      use_label_encoder: false
+      tree_method:       "hist"
+
+  # Random Forest hyperparameter search
+  rf:
+    max_combinations: 9
+    search_grid:
+      n_estimators: [100, 200, 300]
+      max_depth:    [5, 10, 20]
+    fixed:
+      random_state: 42
+      n_jobs:       -1
