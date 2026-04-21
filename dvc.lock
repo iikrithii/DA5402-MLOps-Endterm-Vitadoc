@@ -136,3 +136,101 @@ stages:
       md5: b05869682366d45efa688ba4ec409971.dir
       size: 434352
       nfiles: 9
+  train_ckd:
+    cmd: python src/models/train_ckd.py --model both
+    deps:
+    - path: data/processed/ckd_engineered.csv
+      hash: md5
+      md5: 6e651147edbf7776e0eaf6e13a7e9faa
+      size: 47525
+    - path: params.yaml
+      hash: md5
+      md5: 9c9649aab1a2d19170118c184ea8f9ce
+      size: 2684
+    - path: src/models/train_ckd.py
+      hash: md5
+      md5: 669eb070cb1e462d5012ee6ac44a8023
+      size: 16823
+    params:
+      params.yaml:
+        ckd:
+          data_path: data/processed/ckd_engineered.csv
+          model_out: models/ckd_model.pkl
+          metrics_out: reports/ckd_metrics.json
+          reports_dir: reports
+          experiment_name: VitaDoc-CKD
+          registered_model: VitaDoc-CKD
+          dataset_version: v7-eda
+          test_size: 0.2
+          random_state: 42
+          active_models: both
+          target_col: classification
+          features:
+          - age
+          - bp
+          - bgr
+          - bu
+          - sc
+          - sod
+          - pot
+          - hemo
+          - pcv
+          - wc
+          - rc
+          - sg
+          - al
+          - su
+          - rbc
+          - pc
+          - pcc
+          - ba
+          - htn
+          - dm
+          - cad
+          - appet
+          - pe
+          - ane
+          - kidney_stress
+          xgb:
+            max_combinations: 27
+            search_grid:
+              n_estimators:
+              - 100
+              - 200
+              - 300
+              max_depth:
+              - 3
+              - 4
+              - 6
+              learning_rate:
+              - 0.05
+              - 0.1
+              - 0.2
+            fixed:
+              random_state: 42
+              eval_metric: logloss
+              use_label_encoder: false
+              tree_method: hist
+          rf:
+            max_combinations: 9
+            search_grid:
+              n_estimators:
+              - 100
+              - 200
+              - 300
+              max_depth:
+              - 5
+              - 10
+              - 20
+            fixed:
+              random_state: 42
+              n_jobs: -1
+    outs:
+    - path: models/ckd_model.pkl
+      hash: md5
+      md5: 01deaaf2be565a41cdc3ce7cfff5f5f0
+      size: 100553
+    - path: reports/ckd_metrics.json
+      hash: md5
+      md5: f15181c8b880aab23ea67f6c97af8646
+      size: 170

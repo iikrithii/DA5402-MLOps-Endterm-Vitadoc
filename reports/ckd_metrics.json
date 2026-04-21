@@ -1,0 +1,8 @@
+{
+  "accuracy": 1.0,
+  "auc": 1.0,
+  "macro_f1": 1.0,
+  "model_type": "XGBoost",
+  "run_name": "ckd_xgb_ne100_d3_lr0.05",
+  "run_id": "e752cad7210a4ea69aab0d1ee71651df"
+}
