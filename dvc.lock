@@ -325,3 +325,23 @@ stages:
       hash: md5
       md5: ba29e945f48fc30724cd2451a9be3bf2
       size: 189
+  evaluate_all:
+    cmd: python src/models/evaluate_all.py
+    deps:
+    - path: reports/ckd_metrics.json
+      hash: md5
+      md5: f15181c8b880aab23ea67f6c97af8646
+      size: 170
+    - path: reports/thyroid_metrics.json
+      hash: md5
+      md5: ba29e945f48fc30724cd2451a9be3bf2
+      size: 189
+    - path: src/models/evaluate_all.py
+      hash: md5
+      md5: b1449c603140336804dfb4a3b933e071
+      size: 2313
+    outs:
+    - path: reports/comparison.md
+      hash: md5
+      md5: d3e9d52947d4fcb2d39ae76fb71efb13
+      size: 803
