@@ -1,0 +1,18 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: python src/features/download_data.py
+    deps:
+    - path: src/features/download_data.py
+      hash: md5
+      md5: 944d57d4a1ee1c570f1850edb4a43fc4
+      size: 2690
+    outs:
+    - path: data/raw/ckd.csv
+      hash: md5
+      md5: b62214a102c6b33779c9d89cd30ef5d6
+      size: 48293
+    - path: data/raw/thyroid.csv
+      hash: md5
+      md5: 598ca9abab0426cfa4e805e237cdfc3d
+      size: 353238

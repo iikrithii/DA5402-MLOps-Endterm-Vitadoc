@@ -1,0 +1,63 @@
+stages:
+  download:
+    cmd: python src/features/download_data.py
+    deps:
+      - src/features/download_data.py
+    outs:
+      - data/raw/ckd.csv
+      - data/raw/thyroid.csv
+
+  validate:
+    cmd: python src/features/validate.py both
+    deps:
+      - data/raw/ckd.csv
+      - data/raw/thyroid.csv
+      - src/features/validate.py
+
+  preprocess_ckd:
+    cmd: python src/features/preprocess.py ckd
+    deps:
+      - data/raw/ckd.csv
+      - src/features/validate.py
+      - src/features/preprocess.py
+    outs:
+      - data/processed/ckd_clean.csv
+
+  preprocess_thyroid:
+    cmd: python src/features/preprocess.py thyroid
+    deps:
+      - data/raw/thyroid.csv
+      - src/features/validate.py
+      - src/features/preprocess.py
+    outs:
+      - data/processed/thyroid_clean.csv
+
+  baselines:
+    cmd: python src/features/preprocess.py baselines
+    deps:
+      - data/processed/ckd_clean.csv
+      - data/processed/thyroid_clean.csv
+      - src/features/preprocess.py
+    outs:
+      - data/baseline_stats.json:
+          cache: false
+
+  engineer:
+    cmd: python src/features/engineer.py both
+    deps:
+      - data/processed/ckd_clean.csv
+      - data/processed/thyroid_clean.csv
+      - src/features/engineer.py
+    outs:
+      - data/processed/ckd_engineered.csv
+      - data/processed/thyroid_engineered.csv
+
+  eda:
+    cmd: python src/features/eda.py
+    deps:
+      - data/processed/ckd_engineered.csv
+      - data/processed/thyroid_engineered.csv
+      - src/features/eda.py
+    outs:
+      - reports/eda:
+          cache: false
