@@ -1,0 +1,138 @@
+# docker-compose.yml
+# Full VitaDoc stack.
+# Frontend is commented out — add it back on Day 4.
+#
+# Start: docker-compose up --build -d
+# Stop:  docker-compose down
+#
+# Service URLs:
+#   backend    http://localhost:8000
+#   mlflow     http://localhost:5000
+#   airflow    http://localhost:8080
+#   prometheus http://localhost:9090
+#   grafana    http://localhost:3001
+
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      GROQ_API_KEY:        ${GROQ_API_KEY:-}
+      BASELINE_PATH:       /app/data/baseline_stats.json
+      DB_PATH:             /app/logs/vitadoc.db
+      AIRFLOW_URL:         http://100.65.77.104:8080
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout:  5s
+      retries:  5
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.11.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --serve-artifacts
+      --host 0.0.0.0
+      --port 5000
+    restart: unless-stopped
+
+  mlflow-serve-ckd:
+    image: vitadoc-backend
+    command: >
+      mlflow models serve
+      -m "models:/VitaDoc-CKD@champion"
+      --host 0.0.0.0
+      --port 5001
+      --no-conda
+    ports:
+      - "5001:5001"
+    environment:
+      - MLFLOW_TRACKING_URI=http://100.65.77.104:5000
+    restart: unless-stopped
+
+  mlflow-serve-thyroid:
+    image: vitadoc-backend
+    command: >
+      mlflow models serve
+      -m "models:/VitaDoc-Thyroid@champion"
+      --host 0.0.0.0
+      --port 5002
+      --no-conda
+    ports:
+      - "5002:5002"
+    environment:
+      - MLFLOW_TRACKING_URI=http://100.65.77.104:5000
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alertmanager_rules.yml:/etc/prometheus/alertmanager_rules.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.3.0
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: vitadoc
+      GF_USERS_ALLOW_SIGN_UP:     "false"
+      GF_ALERTING_ENABLED:        "true"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8501:8501"
+    environment:
+      BACKEND_URL:   http://100.65.77.104:8000
+      AIRFLOW_URL:   http://100.65.77.104:8080
+      MLFLOW_URL:    http://100.65.77.104:5000
+      GRAFANA_URL:   http://100.65.77.104:3001
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mlflow-data:
+  grafana-data:

@@ -1,0 +1,113 @@
+global:
+  # How long to wait before re-sending a resolved alert
+  resolve_timeout: 5m
+
+  # Mailtrap SMTP — fill in your credentials from:
+  # mailtrap.io → Inboxes → your inbox → SMTP Settings
+  smtp_smarthost: 'sandbox.smtp.mailtrap.io:2525'
+  smtp_from: 'vitadoc-alerts@vitadoc.local'
+  smtp_auth_username: '81dac9f7e77ce6'   
+  smtp_auth_password: '8039981da4e607'   
+  smtp_require_tls: true
+
+route:
+  # Default receiver for anything not matched below
+  receiver: 'vitadoc-email'
+
+  # Group alerts by alertname + condition so one email per alert type
+  group_by: ['alertname', 'condition', 'team']
+
+  # Wait 30s to batch alerts that fire at the same time
+  group_wait: 30s
+
+  # Wait 5m before sending a new alert group notification
+  group_interval: 5m
+
+  # Re-notify every 3h if an alert is still firing
+  repeat_interval: 3h
+
+  routes:
+    # Critical alerts — send immediately, repeat every hour
+    - match:
+        severity: critical
+      receiver: 'vitadoc-email-critical'
+      group_wait: 10s
+      repeat_interval: 1h
+      continue: false
+
+    # Warning alerts — standard batching
+    - match:
+        severity: warning
+      receiver: 'vitadoc-email'
+      continue: false
+
+    # Info alerts — daily digest (don't spam)
+    - match:
+        severity: info
+      receiver: 'vitadoc-email-digest'
+      repeat_interval: 24h
+      continue: false
+
+receivers:
+  - name: 'vitadoc-email'
+    email_configs:
+      - to: 'your-email@example.com'  
+        send_resolved: true
+        headers:
+          Subject: '[VitaDoc WARNING] {{ .GroupLabels.alertname }}'
+        html: |
+          <h2>VitaDoc Alert — {{ .Status | toUpper }}</h2>
+          {{ range .Alerts }}
+          <p>
+            <strong>Alert:</strong> {{ .Labels.alertname }}<br>
+            <strong>Severity:</strong> {{ .Labels.severity }}<br>
+            <strong>Summary:</strong> {{ .Annotations.summary }}<br>
+            <strong>Detail:</strong> {{ .Annotations.description }}<br>
+            <strong>Fired at:</strong> {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}<br>
+            {{ if .EndsAt }}<strong>Resolved at:</strong> {{ .EndsAt.Format "2006-01-02 15:04:05 UTC" }}{{ end }}
+          </p>
+          <hr>
+          {{ end }}
+
+  - name: 'vitadoc-email-critical'
+    email_configs:
+      - to: 'your-email@example.com'  
+        send_resolved: true
+        headers:
+          Subject: '[VitaDoc CRITICAL] {{ .GroupLabels.alertname }} — IMMEDIATE ATTENTION REQUIRED'
+        html: |
+          <h2 style="color:red">🚨 VitaDoc CRITICAL Alert — {{ .Status | toUpper }}</h2>
+          {{ range .Alerts }}
+          <p>
+            <strong>Alert:</strong> {{ .Labels.alertname }}<br>
+            <strong>Summary:</strong> {{ .Annotations.summary }}<br>
+            <strong>Detail:</strong> {{ .Annotations.description }}<br>
+            <strong>Fired at:</strong> {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}<br>
+            {{ if .EndsAt }}<strong>Resolved at:</strong> {{ .EndsAt.Format "2006-01-02 15:04:05 UTC" }}{{ end }}
+          </p>
+          <hr>
+          {{ end }}
+          <p><em>This alert requires immediate attention. Check Grafana at http://localhost:3001 and backend logs.</em></p>
+
+  - name: 'vitadoc-email-digest'
+    email_configs:
+      - to: 'your-email@example.com'   
+        send_resolved: false
+        headers:
+          Subject: '[VitaDoc INFO] Daily alert digest'
+        html: |
+          <h2>VitaDoc Daily Info Digest</h2>
+          {{ range .Alerts }}
+          <p>
+            <strong>Alert:</strong> {{ .Labels.alertname }}<br>
+            <strong>Summary:</strong> {{ .Annotations.summary }}<br>
+          </p>
+          {{ end }}
+
+inhibit_rules:
+  # If a critical alert fires for the same feature, suppress the warning
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'feature', 'model']

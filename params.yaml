@@ -57,7 +57,6 @@ ckd:
       random_state:      42
       eval_metric:       "logloss"
       use_label_encoder: false
-      tree_method:       "hist"
 
   # Random Forest hyperparameter search
   rf:
@@ -122,7 +121,6 @@ thyroid:
       objective:         "multi:softprob"
       eval_metric:       "mlogloss"
       use_label_encoder: false
-      tree_method:       "hist"
 
   # Random Forest hyperparameter search
   rf:

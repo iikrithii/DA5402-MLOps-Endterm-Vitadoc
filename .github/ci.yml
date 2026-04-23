@@ -1,0 +1,123 @@
+# .github/workflows/ci.yml
+#
+# VitaDoc CI Pipeline
+#
+# Triggers on every push and pull request to main.
+# Runs unit tests only (smoke tests require Docker Compose stack
+# which is not available in GitHub Actions without full setup).
+
+name: VitaDoc CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install \
+            pytest pytest-html pytest-metadata \
+            pandas numpy scikit-learn \
+            imbalanced-learn \
+            pyyaml matplotlib ucimlrepo \
+            fastapi uvicorn pdfplumber \
+            prometheus-client prometheus-fastapi-instrumentator \
+            pydantic python-multipart mlflow==2.11.0 \
+            requests
+
+      - name: Run unit tests (no services required)
+        run: |
+          pytest tests/ \
+            -v \
+            -W ignore \
+            -m "not smoke and not integration" \
+            --html=reports/test_report.html \
+            --self-contained-html \
+            --tb=short \
+            -q
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: reports/test_report.html
+
+      - name: Check test report exists
+        run: |
+          if [ -f reports/test_report.html ]; then
+            echo "✅ Test report generated"
+            grep -o "[0-9]* passed" reports/test_report.html | head -1
+          else
+            echo "❌ Test report missing"
+            exit 1
+          fi
+
+  lint:
+    name: Code Style Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install black
+        run: pip install black==24.3.0
+
+      - name: Check formatting
+        run: |
+          black --check --diff \
+            src/ backend/ tests/ dags/ \
+            --line-length 100 \
+            --exclude "/__pycache__/"
+        continue-on-error: true
+
+  dvc-validate:
+    name: DVC Pipeline Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install DVC
+        run: pip install dvc
+
+      - name: Validate DVC pipeline config
+        run: |
+          dvc dag --dot > /dev/null && echo "✅ DVC DAG valid"
+          dvc params diff --all 2>/dev/null || echo "No params to diff (expected in CI)"

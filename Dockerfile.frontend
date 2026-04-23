@@ -1,0 +1,24 @@
+# Dockerfile.frontend
+# Serves the VitaDoc React frontend via nginx.
+# Environment variables (BACKEND_URL etc.) are injected at container start
+# by docker-entrypoint.sh — no rebuild needed when URLs change.
+
+FROM nginx:1.25-alpine
+
+# Remove default nginx site
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy app files
+COPY frontend/index.html /usr/share/nginx/html/index.html
+COPY nginx.conf          /etc/nginx/conf.d/default.conf
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
+
+# Patch index.html to load config.js before the inline script
+
+RUN sed -i 's|</head>|<script src="/config.js"></script>\n</head>|' /usr/share/nginx/html/index.html
+
+EXPOSE 8501
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

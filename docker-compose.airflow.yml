@@ -1,23 +1,37 @@
 version: '3.8'
 
 x-airflow-common: &airflow-common
+  image: vitadoc-airflow
   build:
     context: .
     dockerfile: Dockerfile.airflow
-  image: vitadoc-airflow:latest
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db/airflow
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
     AIRFLOW__LOGGING__LOG_LEVEL: INFO
-    MLFLOW_TRACKING_URI: http://host.docker.internal:5000
+    MLFLOW_TRACKING_URI: http://mlflow:5000
+    VITADOC_DB_PATH: /opt/airflow/logs/vitadoc.db
+    AIRFLOW__SMTP__SMTP_HOST:      ${MAILTRAP_HOST:-sandbox.smtp.mailtrap.io}
+    AIRFLOW__SMTP__SMTP_PORT:      ${MAILTRAP_PORT:-2525}
+    AIRFLOW__SMTP__SMTP_USER:      ${MAILTRAP_USER:-}
+    AIRFLOW__SMTP__SMTP_PASSWORD:  ${MAILTRAP_PASSWORD:-}
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: ${MAILTRAP_FROM:-vitadoc-alerts@vitadoc.local}
+    AIRFLOW__SMTP__SMTP_SSL:       'false'
+    AIRFLOW__SMTP__SMTP_STARTTLS:  'true'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./src:/opt/airflow/src
     - ./data:/opt/airflow/data
     - ./reports:/opt/airflow/reports
-    - airflow-logs:/opt/airflow/logs
+    - ./models:/opt/airflow/models
+    - ./params.yaml:/opt/airflow/params.yaml
+    - ./dvc.yaml:/opt/airflow/dvc.yaml
+    - ./.dvc:/opt/airflow/.dvc
+    - ./.git:/opt/airflow/.git
+    - ./logs:/opt/airflow/logs
+    - airflow-logs:/opt/airflow/airflow-logs
   depends_on:
     airflow-db:
       condition: service_healthy

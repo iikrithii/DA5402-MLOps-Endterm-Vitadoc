@@ -1,0 +1,247 @@
+groups:
+  - name: vitadoc_system_health
+    rules:
+      - alert: ModelNotLoaded
+        expr: vitadoc_model_version == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "Model not loaded: {{ $labels.model_name }}"
+          description: "The {{ $labels.model_name }} model failed to load at startup. Inference is unavailable."
+
+      - alert: NoSuccessfulAnalyses
+        expr: sum(increase(vitadoc_analysis_total{outcome="success"}[30m])) == 0
+        for: 30m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "No successful analyses in 30 minutes"
+          description: "The backend is receiving requests but none are completing successfully. Check logs immediately."
+
+      - alert: AnalysisFailureRateHigh
+        expr: >
+          sum(increase(vitadoc_analysis_total{outcome="failure"}[5m]))
+          /
+          (sum(increase(vitadoc_analysis_total[5m])) + 0.001) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Analysis failure rate is high ({{ $value | humanizePercentage }})"
+          description: "More than 10% of analyses are failing over the last 5 minutes. Check backend logs and PDF parsing issues."
+
+  - name: vitadoc_inference_latency
+    rules:
+      - alert: HighInferenceLatencyCKD
+        expr: vitadoc_last_inference_seconds{model="ckd"} > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "CKD inference latency is high: {{ $value | humanizeDuration }}"
+          description: "CKD model last inference took {{ $value | humanizeDuration }}, exceeding 200ms SLA. Check system resources."
+
+      - alert: HighInferenceLatencyThyroid
+        expr: vitadoc_last_inference_seconds{model="thyroid"} > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Thyroid inference latency is high: {{ $value | humanizeDuration }}"
+          description: "Thyroid model last inference took {{ $value | humanizeDuration }}, exceeding 200ms SLA. Check system resources."
+
+      - alert: HighAverageInferenceLatency
+        expr: >
+          (rate(vitadoc_inference_seconds_sum[5m]) / rate(vitadoc_inference_seconds_count[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Average inference latency exceeds 500ms"
+          description: "Average latency across both models is {{ $value | humanizeDuration }}. Sustained high latency degrades user experience."
+
+  - name: vitadoc_model_quality
+    rules:
+      - alert: FeatureDriftWarning
+        expr: vitadoc_feature_drift_stddevs > 1.5
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Feature drift warning: {{ $labels.feature }}"
+          description: "{{ $labels.feature }} has drifted {{ $value | humanize }}σ from training baseline. Approaching retraining threshold (2.0σ)."
+
+      - alert: FeatureDriftCritical
+        expr: vitadoc_feature_drift_stddevs > 2.0
+        for: 2m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "Feature drift critical: {{ $labels.feature }} ({{ $value | humanize }}σ)"
+          description: "{{ $labels.feature }} has drifted beyond critical threshold. Nightly retraining will trigger automatically. Monitor model accuracy."
+
+      - alert: SevereDriftDetected
+        expr: vitadoc_feature_drift_stddevs > 3.5
+        for: 2m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "Severe drift detected: {{ $labels.feature }} ({{ $value | humanize }}σ)"
+          description: "{{ $labels.feature }} has drifted {{ $value | humanize }}σ — critical risk. Consider triggering immediate retraining, do not wait for nightly DAG."
+
+      - alert: HighCKDPositiveRate
+        expr: >
+          sum(vitadoc_predictions_total{condition='ckd',predicted_class='1'})
+          / (sum(vitadoc_predictions_total{condition='ckd'}) + 0.001) > 0.7
+        for: 10m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Unusually high CKD positive rate: {{ $value | humanizePercentage }}"
+          description: "CKD positive predictions at {{ $value | humanizePercentage }}, baseline ~40–50%. Possible data drift or model degradation."
+
+      - alert: HighThyroidAbnormalRate
+        expr: >
+          (sum(vitadoc_predictions_total{condition='thyroid',predicted_class='1'})
+          + sum(vitadoc_predictions_total{condition='thyroid',predicted_class='2'}))
+          / (sum(vitadoc_predictions_total{condition='thyroid'}) + 0.001) > 0.6
+        for: 10m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Unusually high thyroid abnormal rate: {{ $value | humanizePercentage }}"
+          description: "Thyroid abnormal (hypo + hyper) predictions at {{ $value | humanizePercentage }}, baseline ~30%. Likely data drift."
+
+  - name: vitadoc_feedback_retraining
+    rules:
+      - alert: HighFeedbackCorrectionRate
+        expr: >
+          sum(vitadoc_feedback_total)
+          / (sum(vitadoc_predictions_total) + 0.001) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Feedback correction rate above 15%: {{ $value | humanizePercentage }}"
+          description: "Users are correcting {{ $value | humanizePercentage }} of predictions. Model quality is degrading — retraining recommended."
+
+      - alert: RetrainingThresholdReached
+        expr: sum(vitadoc_feedback_total) >= 20
+        for: 1m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Retraining threshold reached: {{ $value }} pending corrections"
+          description: "There are {{ $value }} pending user corrections accumulated. If correction rate also exceeds 15%, nightly DAG will trigger retraining."
+
+      - alert: CriticalCorrectionRateWithPendingFeedback
+        expr: >
+          (sum(vitadoc_feedback_total) >= 20)
+          and
+          (sum(vitadoc_feedback_total) / (sum(vitadoc_predictions_total) + 0.001) > 0.15)
+        for: 5m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "Retraining will trigger: both thresholds exceeded"
+          description: "Pending feedback count and correction rate both exceed thresholds. Retraining will be triggered by the nightly DAG."
+
+  - name: vitadoc_data_quality
+    rules:
+      - alert: LowOCRCoverage
+        expr: vitadoc_ocr_coverage < 0.3
+        for: 10m
+        labels:
+          severity: warning
+          team: product
+        annotations:
+          summary: "OCR coverage below 30%: {{ $value | humanizePercentage }}"
+          description: "Only {{ $value | humanizePercentage }} of expected lab features are being extracted from uploaded PDFs. Users may get skipped predictions."
+
+      - alert: NoOCRCoverage
+        expr: vitadoc_ocr_coverage < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: product
+        annotations:
+          summary: "OCR coverage critically low: {{ $value | humanizePercentage }}"
+          description: "PDF extraction is nearly non-functional ({{ $value | humanizePercentage }}). Almost no features being extracted."
+
+      - alert: NoPredictionsIn30m
+        expr: rate(vitadoc_predictions_total[30m]) == 0
+        for: 30m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "No predictions in the last 30 minutes"
+          description: "Either no user traffic or the inference endpoint is broken. Check backend logs and connectivity."
+
+  - name: vitadoc_reliability
+    rules:
+      - alert: HighErrorRate
+        expr: >
+          (sum(rate(vitadoc_requests_total[5m])) > 0)
+          and
+          (sum(rate(analysis_outcome_counter{outcome="failure"}[5m])) / sum(rate(vitadoc_requests_total[5m])) > 0.05)
+        for: 5m
+        labels:
+          severity: critical
+          team: mlops
+        annotations:
+          summary: "Error rate above 5%"
+          description: "More than 5% of API requests are returning errors. Immediate investigation required."
+
+      - alert: ModelVersionMismatch
+        expr: count(vitadoc_model_version > 0) < 2
+        for: 5m
+        labels:
+          severity: warning
+          team: mlops
+        annotations:
+          summary: "Not all models are loaded"
+          description: "Expected 2 models (CKD + Thyroid) but only {{ $value }} are loaded. Check startup logs."
+
+  - name: vitadoc_upload_endpoints
+    rules:
+      - alert: PDFUploadFailureHigh
+        expr: >
+          sum(increase(vitadoc_analysis_total{endpoint="/analyse", outcome="failure"}[5m]))
+          /
+          (sum(increase(vitadoc_analysis_total{endpoint="/analyse"}[5m])) + 0.001) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+          team: product
+        annotations:
+          summary: "PDF upload failure rate above 15%"
+          description: "Users uploading PDFs are experiencing a {{ $value | humanizePercentage }} failure rate. Check PDF parsing and OCR."
+
+      - alert: ManualEntryFailureHigh
+        expr: >
+          sum(increase(vitadoc_analysis_total{endpoint="/analyse/manual", outcome="failure"}[5m]))
+          /
+          (sum(increase(vitadoc_analysis_total{endpoint="/analyse/manual"}[5m])) + 0.001) > 0.20
+        for: 5m
+        labels:
+          severity: warning
+          team: product
+        annotations:
+          summary: "Manual entry failure rate above 20%"
+          description: "Users entering values manually are experiencing a {{ $value | humanizePercentage }} failure rate. Check validation logic."

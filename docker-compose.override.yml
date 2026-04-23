@@ -1,0 +1,5 @@
+services:
+  backend:
+    command: >
+      sh -c "pip install 'groq==0.9.0' 'httpx<0.28' -q &&
+             uvicorn backend.main:app --host 0.0.0.0 --port 8000"

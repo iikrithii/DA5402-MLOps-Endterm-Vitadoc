@@ -485,8 +485,13 @@ def main(model_override: str = None):
             stage="Production",
             archive_existing_versions=True,
         )
+        client.set_registered_model_alias(
+            name=cfg["registered_model"],
+            alias="champion",
+            version=mv.version,
+        )
         log.info(
-            "Registered %s v%s → Production",
+            "Registered %s v%s → Production + @champion",
             cfg["registered_model"], mv.version,
         )
     except Exception as e:

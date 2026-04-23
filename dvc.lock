@@ -5,8 +5,8 @@ stages:
     deps:
     - path: src/features/download_data.py
       hash: md5
-      md5: 944d57d4a1ee1c570f1850edb4a43fc4
-      size: 2690
+      md5: eb3783b6840fbabe9170e03c1e63a4a6
+      size: 2955
     outs:
     - path: data/raw/ckd.csv
       hash: md5
@@ -133,8 +133,8 @@ stages:
     outs:
     - path: reports/eda
       hash: md5
-      md5: b05869682366d45efa688ba4ec409971.dir
-      size: 434352
+      md5: 9a6f7b195271e6bad610c4deebc03f48.dir
+      size: 434307
       nfiles: 9
   train_ckd:
     cmd: python src/models/train_ckd.py --model both
@@ -145,12 +145,12 @@ stages:
       size: 47525
     - path: params.yaml
       hash: md5
-      md5: 9c9649aab1a2d19170118c184ea8f9ce
-      size: 2684
+      md5: 037e3cc33983824e15eeece9c048bcdf
+      size: 2620
     - path: src/models/train_ckd.py
       hash: md5
-      md5: 669eb070cb1e462d5012ee6ac44a8023
-      size: 16823
+      md5: 2aee548bfaebdce7fbf2e466c5be2451
+      size: 16992
     params:
       params.yaml:
         ckd:
@@ -210,7 +210,6 @@ stages:
               random_state: 42
               eval_metric: logloss
               use_label_encoder: false
-              tree_method: hist
           rf:
             max_combinations: 9
             search_grid:
@@ -228,11 +227,11 @@ stages:
     outs:
     - path: models/ckd_model.pkl
       hash: md5
-      md5: 01deaaf2be565a41cdc3ce7cfff5f5f0
-      size: 100553
+      md5: d98a823019d69826cbf6697a61711874
+      size: 100547
     - path: reports/ckd_metrics.json
       hash: md5
-      md5: f15181c8b880aab23ea67f6c97af8646
+      md5: 8190de7b45db575db47ed27e3973a25d
       size: 170
   train_thyroid:
     cmd: python src/models/train_thyroid.py --model both
@@ -243,12 +242,12 @@ stages:
       size: 511376
     - path: params.yaml
       hash: md5
-      md5: 9c9649aab1a2d19170118c184ea8f9ce
-      size: 2684
+      md5: 037e3cc33983824e15eeece9c048bcdf
+      size: 2620
     - path: src/models/train_thyroid.py
       hash: md5
-      md5: 36c13cdd8a2b3daf47b39fb470b83b9a
-      size: 16335
+      md5: e115c4733a17efbf6df23b55944f5136
+      size: 16504
     params:
       params.yaml:
         thyroid:
@@ -301,7 +300,6 @@ stages:
               objective: multi:softprob
               eval_metric: mlogloss
               use_label_encoder: false
-              tree_method: hist
           rf:
             max_combinations: 9
             search_grid:
@@ -319,11 +317,11 @@ stages:
     outs:
     - path: models/thyroid_model.pkl
       hash: md5
-      md5: a1c5560b129ba51e467a6b165d809871
+      md5: b4b065e35ec13d00a8c67b73a47e4d60
       size: 457117
     - path: reports/thyroid_metrics.json
       hash: md5
-      md5: ba29e945f48fc30724cd2451a9be3bf2
+      md5: 468d827d67c47a811f702f395aa884d7
       size: 189
   evaluate_all:
     cmd: python src/models/evaluate_all.py

@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VitaDoc — Blood Test Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0; --surface: #ffffff; --surface2: #f9f8f5;
+    --border: #e4e2db; --border2: #d0cdc4;
+    --ink: #1a1916; --ink2: #6b6860; --ink3: #a8a69f;
+    --navy: #0f2040; --accent: #2563eb; --accent-soft: #eff4ff;
+    --green: #166534; --green-bg: #f0fdf4; --green-border: #bbf7d0;
+    --red: #991b1b; --red-bg: #fef2f2; --red-border: #fecaca;
+    --amber: #92400e; --amber-bg: #fffbeb; --amber-border: #fde68a;
+    --r: 12px; --r-sm: 8px;
+    --shadow: 0 1px 3px rgba(26,25,22,.06), 0 4px 16px rgba(26,25,22,.04);
+    --shadow-md: 0 2px 8px rgba(26,25,22,.08), 0 8px 32px rgba(26,25,22,.06);
+  }
+
+  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  #app { display: flex; height: 100vh; overflow: hidden; flex-direction: column; }
+  #app-inner { display: flex; flex: 1; overflow: hidden; }
+
+  #mobile-bar { display: none; align-items: center; gap: 12px; background: var(--navy); padding: 14px 18px; flex-shrink: 0; z-index: 100; }
+  #mobile-bar .mb-logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: #fff; flex: 1; }
+  #mobile-status { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; }
+  .hamburger { background: none; border: none; cursor: pointer; padding: 4px; display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,.85); border-radius: 2px; transition: all .22s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  #sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 199; backdrop-filter: blur(2px); }
+  #sb-overlay.active { display: block; }
+
+  #sidebar { width: 240px; min-width: 240px; background: var(--navy); display: flex; flex-direction: column; overflow: hidden; transition: transform .25s ease; z-index: 200; }
+  .sb-brand { padding: 28px 24px 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .sb-logo { font-family: 'DM Serif Display', serif; font-size: 1.7rem; color: #fff; line-height: 1; display: flex; align-items: center; gap: 10px; }
+  .sb-logo-icon { width: 38px; height: 38px; background: rgba(255,255,255,.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; }
+  .sb-tagline { font-size: 0.72rem; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .1em; margin-top: 6px; }
+  .sb-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sb-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; color: rgba(255,255,255,.65); font-size: 1rem; font-weight: 500; user-select: none; border: none; background: none; width: 100%; text-align: left; }
+  .sb-item:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
+  .sb-item.active { background: rgba(37,99,235,.35); color: #fff; }
+  .sb-item-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
+  .sb-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: 0.75rem; color: rgba(255,255,255,.3); display: flex; align-items: center; gap: 8px; }
+  .sb-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  #main { flex: 1; overflow-y: auto; min-width: 0; }
+  .page { max-width: 920px; margin: 0 auto; padding: 36px 32px 64px; }
+
+  h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--navy); line-height: 1.2; margin-bottom: 6px; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); line-height: 1.3; }
+  .page-sub { color: var(--ink2); font-size: 0.92rem; margin-bottom: 28px; }
+
+  /* ── Hero ── */
+  .hero { background: var(--navy); border-radius: var(--r); padding: 40px 40px 36px; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .hero::after { content: '🩺'; position: absolute; right: 36px; top: 50%; transform: translateY(-50%); font-size: 5.5rem; opacity: .06; }
+  .hero h1 { color: #fff; font-size: 2.1rem; margin-bottom: 10px; }
+  .hero p { color: rgba(147,197,253,.85); font-size: 0.92rem; max-width: 480px; line-height: 1.7; }
+  .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+  .hero-pill { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 20px; padding: 5px 14px; color: rgba(255,255,255,.85); font-size: 0.78rem; font-weight: 500; }
+
+  /* ── Hero metrics bar ── */
+  .hero-metrics { display: flex; gap: 0; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-sm); margin-top: 24px; overflow: hidden; }
+  .hero-metric { flex: 1; padding: 12px 16px; border-right: 1px solid rgba(255,255,255,.08); }
+  .hero-metric:last-child { border-right: none; }
+  .hero-metric-val { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: #fff; line-height: 1; }
+  .hero-metric-lbl { font-size: 0.63rem; text-transform: uppercase; letter-spacing: .09em; color: rgba(255,255,255,.4); margin-top: 3px; }
+  .hero-metric-val.live { color: #4ade80; }
+  .hero-metric-val.warn { color: #fbbf24; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .card-title { font-weight: 600; font-size: 0.95rem; color: var(--ink); }
+  .card-sub { font-size: 0.78rem; color: var(--ink3); margin-top: 2px; }
+
+  .status-bar { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 0.78rem; font-weight: 500; color: var(--ink2); margin-bottom: 24px; box-shadow: var(--shadow); }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.65;transform:scale(1.2)} }
+
+  .section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #111827;
+  margin-bottom: 12px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .form-grid-2 { grid-template-columns: repeat(2,1fr); }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink2); }
+  input[type="text"], input[type="number"], select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500; background: var(--surface2); color: var(--ink); transition: border .15s, box-shadow .15s; outline: none; width: 100%; }
+  input:focus, select:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  input::placeholder { color: var(--ink3); font-size: 0.82rem; font-weight: 400; }
+
+  .tabs { display: flex; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 4px; margin-bottom: 20px; width: fit-content; }
+  .tab { padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 0.84rem; font-weight: 500; color: var(--ink2); transition: all .15s; border: none; background: none; display: flex; align-items: center; gap: 6px; }
+  .tab:hover { color: var(--ink); }
+  .tab.active { background: var(--surface); color: var(--navy); font-weight: 600; box-shadow: var(--shadow); }
+
+  .upload-zone { border: 2px dashed var(--border2); border-radius: var(--r); padding: 36px 24px; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .upload-zone input { display: none; }
+  .upload-icon { font-size: 2.2rem; margin-bottom: 10px; }
+  .upload-label { font-size: 0.9rem; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .upload-sub { font-size: 0.78rem; color: var(--ink3); }
+  .upload-link { color: var(--accent); text-decoration: underline; }
+  .file-ok { display: flex; align-items: center; gap: 12px; background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--r-sm); padding: 12px 16px; font-size: 0.86rem; color: var(--green); font-weight: 500; margin-top: 12px; }
+  .file-ok-name { font-weight: 600; }
+  .file-ok-meta { font-size: 0.75rem; opacity: .75; font-weight: 400; }
+
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 22px; border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all .15s; border: 1.5px solid transparent; text-decoration: none; }
+  .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .btn-primary:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); box-shadow: 0 4px 12px rgba(37,99,235,.25); transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface); color: var(--navy); border-color: var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+  .counter { display: inline-flex; align-items: center; gap: 5px; background: var(--navy); color: #fff; border-radius: 16px; padding: 3px 12px; font-size: 0.76rem; font-weight: 600; }
+
+  .info-banner { display: flex; align-items: flex-start; gap: 10px; border-radius: var(--r-sm); padding: 13px 16px; font-size: 0.84rem; margin-bottom: 18px; line-height: 1.55; }
+  .info-blue { background: var(--accent-soft); border: 1px solid #bfdbfe; color: #1e40af; }
+  .info-amber { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
+  .info-red { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+  .info-green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+
+  /* ── Result cards ── */
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); border-left-width: 4px; }
+  .result-positive { border-left-color: #ef4444; }
+  .result-negative { border-left-color: #22c55e; }
+  .result-skipped  { border-left-color: #94a3b8; }
+  .result-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .result-condition { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); margin-bottom: 6px; }
+  .result-label { font-family: 'DM Serif Display', serif; font-size: 1.6rem; line-height: 1.2; }
+  .result-conf { text-align: right; }
+  .result-conf-num { font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1; }
+  .result-conf-lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); margin-top: 2px; }
+  .conf-bar { height: 4px; background: var(--border); border-radius: 2px; margin: 12px 0 20px; overflow: hidden; }
+  .conf-fill { height: 100%; border-radius: 2px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+  .latency-badge { display: inline-flex; align-items: center; gap: 5px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; padding: 3px 10px; font-size: 0.7rem; font-weight: 600; color: #475569; font-family: 'DM Mono', monospace; }
+  .latency-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; }
+
+  .badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 9px; border-radius: 12px; font-size: 0.68rem; font-weight: 700; letter-spacing: .04em; }
+  .badge-high { background: #fee2e2; color: #b91c1c; }
+  .badge-low { background: #fff7ed; color: #c2410c; }
+  .badge-normal { background: #dcfce7; color: #166534; }
+  .badge-unknown { background: #f1f5f9; color: #64748b; }
+
+  .imp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .imp-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px 14px; position: relative; }
+  .imp-rank-pill { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; font-weight: 800; padding: 2px 7px; border-radius: 10px; }
+  .imp-card-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--ink3); margin-bottom: 6px; }
+  .imp-card-name { font-weight: 700; font-size: 0.92rem; color: var(--navy); margin-bottom: 5px; line-height: 1.3; }
+  .imp-card-status { font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
+  .imp-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
+  .imp-bar { height: 100%; border-radius: 2px; transition: width .9s cubic-bezier(.4,0,.2,1); }
+  .imp-why { font-size: 0.74rem; color: var(--ink2); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 8px; }
+
+  .accordion { border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; margin-top: 10px; }
+  .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; cursor: pointer; background: var(--surface2); user-select: none; transition: background .15s; }
+  .acc-header:hover { background: #ededea; }
+  .acc-header-left { display: flex; align-items: center; gap: 9px; font-size: 0.88rem; font-weight: 600; color: var(--ink2); }
+  .acc-chevron { font-size: 0.72rem; color: var(--ink3); transition: transform .2s; }
+  .accordion.open .acc-chevron { transform: rotate(180deg); }
+  .accordion.open .acc-header { background: #ededea; }
+  .acc-body { display: none; padding: 18px; border-top: 1px solid var(--border); }
+  .accordion.open .acc-body { display: block; }
+
+  .thumb-row { display: flex; gap: 10px; margin-bottom: 2px; }
+  .thumb-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--r-sm); border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; font-size: 0.86rem; font-weight: 600; color: var(--ink2); transition: all .15s; font-family: 'DM Sans', sans-serif; }
+  .thumb-btn:hover { border-color: var(--border2); }
+  .thumb-btn.up.sel { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .thumb-btn.down.sel { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+  .fb-options-lbl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); margin: 14px 0 8px; }
+  .fb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fb-chip { padding: 7px 15px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface); font-size: 0.8rem; font-weight: 500; color: var(--ink2); cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+  .fb-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .fb-chip.sel { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+  .fb-done { display: flex; align-items: center; gap: 8px; color: var(--green); font-size: 0.86rem; font-weight: 600; padding: 4px 0; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--navy); line-height: 1; margin-bottom: 4px; }
+  .stat-lbl { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+
+  /* ── Pipeline ── */
+  .pipeline-live-badge { display: flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 5px 12px; font-size: 0.75rem; font-weight: 700; color: #166534; }
+
+  .pipeline-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  .pm-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .pm-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .pm-card.green::before { background: #22c55e; }
+  .pm-card.blue::before { background: #3b82f6; }
+  .pm-card.amber::before { background: #f59e0b; }
+  .pm-card.red::before { background: #ef4444; }
+  .pm-card.purple::before { background: #8b5cf6; }
+  .pm-card.teal::before { background: #0d9488; }
+  .pm-num { font-family: 'DM Serif Display', serif; font-size: 1.7rem; color: var(--navy); line-height: 1; margin-bottom: 3px; }
+  .pm-lbl { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--ink3); }
+  .pm-sub { font-size: 0.72rem; color: var(--ink2); margin-top: 4px; }
+  .pm-trend { font-size: 0.68rem; font-weight: 700; margin-top: 6px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 10px; }
+  .pm-trend.good { background: #dcfce7; color: #166534; }
+  .pm-trend.warn { background: #fffbeb; color: #92400e; }
+  .pm-trend.info { background: #eff6ff; color: #1e40af; }
+
+  /* ── Fancy DAG ── */
+  .dag-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 36px 28px 30px; margin-bottom: 24px; box-shadow: var(--shadow); overflow: visible; }
+  .dag-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 12px; flex-wrap: wrap; }
+  .dag-header-left { flex: 1; }
+  .dag-title { font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 4px; }
+.dag-subtitle { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; }
+  /* The actual parallel DAG flow */
+  .dag-flow-wrap { overflow-x: auto; padding-bottom: 4px; }
+  .dag-row { display: flex; align-items: center; gap: 0; min-width: fit-content; }
+  .dag-parallel-group { display: flex; flex-direction: column; gap: 18px; position: relative; }
+  .dag-parallel-group::before { content:''; position:absolute; left:-1px; top:26px; bottom:26px; width:2px; background: var(--border); border-radius:2px; }
+  .dag-parallel-group::after { content:''; position:absolute; right:-1px; top:26px; bottom:26px; width:2px; background: var(--border); border-radius:2px; }
+
+  .dag-node { position: relative; }
+  .dag-node-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 110px; height: 76px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; transition: all .2s; background: none; font-family: 'DM Sans', sans-serif; gap: 4px; position: relative; }
+  .dag-node-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+  .dag-node-btn.success { background: #f0fdf4; border-color: #86efac; }
+  .dag-node-btn.success:hover { border-color: #4ade80; }
+  .dag-node-btn.running { background: #eff6ff; border-color: #93c5fd; animation: dag-pulse 1.5s infinite; }
+  .dag-node-btn.pending { background: var(--surface2); border-color: var(--border2); }
+  .dag-node-btn.failed  { background: #fef2f2; border-color: #fca5a5; }
+  .dag-node-btn.active-selected { box-shadow: 0 0 0 3px rgba(37,99,235,.25) !important; border-color: var(--accent) !important; }
+  @keyframes dag-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.3)} 50%{box-shadow:0 0 0 8px rgba(59,130,246,0)} }
+  .dag-node-icon { font-size: 1.1rem; line-height: 1; }
+.dag-node-lbl { font-size: 0.67rem; font-weight: 700; color: var(--ink2); text-align: center; line-height: 1.2; max-width: 82px; }
+.dag-node-time { font-size: 0.6rem; color: var(--ink3); font-family: 'DM Mono', monospace; margin-top: 5px; text-align: center; }
+  .dag-node-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; border:2px solid #fff; }
+  .dag-node-dot.success { background:#22c55e; }
+  .dag-node-dot.running { background:#3b82f6; animation: pulse 1.2s infinite; }
+  .dag-node-dot.pending { background:#94a3b8; }
+  .dag-node-dot.failed  { background:#ef4444; }
+
+  .dag-arrow { display: flex; align-items: center; padding: 0 6px; flex-shrink: 0; }
+.dag-arrow-line { height: 2px; width: 34px; background: var(--border2); border-radius: 2px; position: relative; }
+  .dag-arrow-line.active { background: #86efac; }
+  .dag-arrow-line::after { content:'▶'; position:absolute; right:-8px; top:-8px; font-size:.6rem; color: var(--ink3); }
+  .dag-arrow-line.active::after { color: #16a34a; }
+
+  /* Fork / join connector for parallel groups */
+  .dag-fork { display: flex; align-items: center; padding: 0 2px; }
+  .dag-fork-lines { display: flex; flex-direction: column; gap: 10px; }
+  .dag-fork-line { height: 2px; width: 16px; background: var(--border2); border-radius: 2px; }
+  .dag-fork-line.active { background: #86efac; }
+
+  /* Node detail tooltip */
+.dag-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-top: 18px; box-shadow: var(--shadow-md); animation: slideDown .18s ease; border-left: 4px solid var(--accent); }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .dag-detail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .dag-detail-icon { font-size: 1.4rem; }
+  .dag-detail-title { font-weight: 700; font-size: 0.95rem; color: var(--navy); }
+  .dag-detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .dag-detail-badge { padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; background: var(--surface2); color: var(--ink2); border: 1px solid var(--border); }
+  .dag-detail-body { font-size: 0.84rem; color: var(--ink2); line-height: 1.7; }
+  .dag-detail-meta { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .dag-detail-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .dag-detail-meta-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 700; }
+  .dag-detail-meta-val { font-size: 0.82rem; font-weight: 700; color: var(--navy); font-family: 'DM Mono', monospace; }
+
+  /* Run log table */
+  .run-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .run-log-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .run-log-title { font-weight: 700; font-size: 0.88rem; color: var(--navy); }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table th { text-align: left; padding: 9px 16px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); border-bottom: 1px solid var(--border); background: var(--surface2); }
+  .data-table td { padding: 9px 16px; border-bottom: 1px solid #f4f3ef; vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+  .mono { font-family: 'DM Mono', monospace; font-weight: 500; }
+
+  /* External tools */
+  .tool-links { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  .tool-link-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; box-shadow: var(--shadow); text-decoration: none; display: flex; flex-direction: column; gap: 8px; transition: all .18s; }
+  .tool-link-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(37,99,235,.12); transform: translateY(-2px); }
+  .tool-link-icon { font-size: 1.6rem; }
+  .tool-link-name { font-weight: 700; font-size: 0.92rem; color: var(--navy); }
+  .tool-link-desc { font-size: 0.75rem; color: var(--ink2); line-height: 1.45; }
+  .tool-link-arrow { font-size: 0.75rem; color: var(--accent); font-weight: 700; margin-top: auto; }
+
+  /* About / manual */
+  .about-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .about-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .about-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .about-body { font-size: 0.88rem; color: var(--ink2); line-height: 1.75; }
+  .step-list { display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; align-items: flex-start; gap: 12px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  .disclaimer {
+  text-align: center;
+  font-size: 0.73rem;
+  color: #111827;
+  font-weight: 500;
+  padding: 20px 0 0;
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-msg { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--r-sm); padding: 12px 16px; color: var(--red); font-size: 0.86rem; margin-bottom: 16px; }
+  .empty-state { text-align: center; padding: 64px 32px; }
+  .empty-state-icon { font-size: 3rem; margin-bottom: 16px; }
+  .empty-state h3 { color: var(--navy); margin-bottom: 8px; }
+  .empty-state p { color: var(--ink2); font-size: 0.88rem; }
+
+  /* ════ ONBOARDING ════ */
+  #onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(10, 16, 40, 0.92); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  #onboarding-overlay.hidden { display: none; }
+  .ob-container { max-width: 560px; width: 90%; position: relative; }
+  .ob-step { display: none; flex-direction: column; align-items: center; text-align: center; }
+  .ob-step.active { display: flex; }
+  .ob-badge { background: rgba(37,99,235,.25); border: 1px solid rgba(37,99,235,.4); color: #93c5fd; border-radius: 20px; padding: 4px 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 18px; }
+  .ob-icon { font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 24px rgba(147,197,253,.4)); }
+  .ob-title { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #fff; line-height: 1.2; margin-bottom: 12px; }
+  .ob-desc { font-size: 0.92rem; color: rgba(147,197,253,.8); line-height: 1.75; margin-bottom: 28px; max-width: 440px; }
+  .ob-mockup { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 20px; margin-bottom: 24px; width: 100%; text-align: left; }
+  .ob-mockup-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 0.84rem; transition: background .2s; }
+  .ob-mockup-row:last-child { margin-bottom: 0; }
+  .ob-mockup-row.highlight { background: rgba(37,99,235,.25); border: 1px solid rgba(37,99,235,.4); animation: ob-glow 2s infinite; }
+  @keyframes ob-glow { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.3)} 50%{box-shadow:0 0 0 6px rgba(37,99,235,0)} }
+  .ob-mockup-row .ob-row-icon { font-size: 1.1rem; width: 24px; text-align:center; flex-shrink:0; }
+  .ob-mockup-row .ob-row-label { color: rgba(255,255,255,.85); font-weight:500; flex:1; }
+  .ob-mockup-row .ob-row-badge { background: rgba(74,222,128,.2); border: 1px solid rgba(74,222,128,.4); color: #4ade80; border-radius: 10px; padding: 2px 9px; font-size: 0.65rem; font-weight:700; }
+  .ob-mockup-row .ob-row-badge.blue { background: rgba(147,197,253,.2); border-color: rgba(147,197,253,.4); color: #93c5fd; }
+  .ob-dots { display: flex; gap: 8px; margin-bottom: 24px; }
+  .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.2); transition: all .3s; }
+  .ob-dot.active { background: #fff; width: 24px; border-radius: 4px; }
+  .ob-actions { display: flex; gap: 12px; align-items: center; }
+  .ob-btn-primary { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 12px 28px; font-size: 0.92rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+  .ob-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+  .ob-btn-skip { background: transparent; color: rgba(255,255,255,.4); border: none; font-size: 0.84rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 8px 16px; border-radius: 8px; transition: all .15s; }
+  .ob-btn-skip:hover { color: rgba(255,255,255,.7); }
+  .ob-progress { position: absolute; bottom: -40px; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; }
+  .ob-progress-fill { height: 100%; background: #2563eb; border-radius: 2px; transition: width .4s ease; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    #sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.3); }
+    #mobile-bar { display: flex; }
+    .page { padding: 20px 16px 48px; }
+    .form-grid { grid-template-columns: repeat(2,1fr); }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .pipeline-metrics { grid-template-columns: repeat(2,1fr); }
+    .imp-grid { grid-template-columns: 1fr; }
+    .hero { padding: 28px 22px; }
+    .hero h1 { font-size: 1.65rem; }
+    .hero-metrics { flex-direction: column; }
+    .hero-metric { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+    h1 { font-size: 1.7rem; }
+    .result-head { flex-direction: column; gap: 10px; }
+    .result-conf { text-align: left; }
+    .tool-links { grid-template-columns: 1fr; }
+    .dag-flow-wrap { overflow-x: auto; }
+  }
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .tabs { width: 100%; }
+    .tab { flex: 1; justify-content: center; padding: 8px 8px; font-size: 0.78rem; }
+    h1 { font-size: 1.5rem; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .pipeline-metrics { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING OVERLAY -->
+<div id="onboarding-overlay">
+  <div class="ob-container">
+    <div class="ob-step active" id="ob-step-1">
+      <div class="ob-badge">Welcome to VitaDoc</div>
+      <div class="ob-icon">🩺</div>
+      <div class="ob-title">Your blood tests,<br>explained simply.</div>
+      <div class="ob-desc">VitaDoc analyses your blood test results for Chronic Kidney Disease and Thyroid Dysfunction in seconds — no medical background needed.</div>
+      <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+      <div class="ob-actions">
+        <button class="ob-btn-primary" onclick="obNext()">Get started →</button>
+        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob-step-2">
+      <div class="ob-badge">Step 1 of 3</div>
+      <div class="ob-icon">👤</div>
+      <div class="ob-title">Enter your details</div>
+      <div class="ob-desc">Start by entering your age and biological sex — the model uses these to calibrate its reference ranges accurately.</div>
+      <div class="ob-mockup">
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🎂</span><span class="ob-row-label">Age — e.g. 45 years</span><span class="ob-row-badge">Required</span></div>
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">⚧</span><span class="ob-row-label">Biological Sex — Male / Female</span><span class="ob-row-badge">Required</span></div>
+        <div class="ob-mockup-row" style="opacity:.45"><span class="ob-row-icon">📄</span><span class="ob-row-label">Upload PDF or enter values manually</span><span class="ob-row-badge blue">Next</span></div>
+      </div>
+      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+      <div class="ob-actions">
+        <button class="ob-btn-primary" onclick="obNext()">Next →</button>
+        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob-step-3">
+      <div class="ob-badge">Step 2 of 3</div>
+      <div class="ob-icon">📋</div>
+      <div class="ob-title">Add your blood test values</div>
+      <div class="ob-desc">Either drag-and-drop your blood test PDF (values extracted automatically) or type in the numbers manually — whatever you have.</div>
+      <div class="ob-mockup">
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">📄</span><span class="ob-row-label"><strong>Upload PDF</strong> — auto-extracts all values via OCR</span><span class="ob-row-badge">Fastest</span></div>
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">✏️</span><span class="ob-row-label"><strong>Enter Manually</strong> — type each lab value yourself</span><span class="ob-row-badge blue">Flexible</span></div>
+        <div class="ob-mockup-row" style="opacity:.45"><span class="ob-row-icon">🔬</span><span class="ob-row-label">More values = higher accuracy (40% minimum needed)</span></div>
+      </div>
+      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+      <div class="ob-actions">
+        <button class="ob-btn-primary" onclick="obNext()">Next →</button>
+        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob-step-4">
+      <div class="ob-badge">Step 3 of 3</div>
+      <div class="ob-icon">📊</div>
+      <div class="ob-title">Read your results</div>
+      <div class="ob-desc">Results show confidence scores, abnormal markers, and plain-English explanations. If flagged, please see a doctor — this tool informs, not diagnoses.</div>
+      <div class="ob-mockup">
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🔴</span><span class="ob-row-label">Red border — possible issue detected</span></div>
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🟢</span><span class="ob-row-label">Green border — no significant issue found</span></div>
+        <div class="ob-mockup-row highlight"><span class="ob-row-icon">💬</span><span class="ob-row-label">Tap any result to give feedback — it retrains the model</span></div>
+      </div>
+      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
+      <div class="ob-actions"><button class="ob-btn-primary" onclick="obSkip()">Start analysing →</button></div>
+    </div>
+    <div class="ob-progress"><div class="ob-progress-fill" id="ob-progress-fill" style="width:25%"></div></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div id="mobile-bar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mb-logo">🩺 VitaDoc</div>
+    <div id="mobile-status" title="Backend status"></div>
+  </div>
+
+  <div id="app-inner">
+    <div id="sb-overlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar">
+      <div class="sb-brand">
+        <div class="sb-logo"><div class="sb-logo-icon">🩺</div> VitaDoc</div>
+        <div class="sb-tagline">Blood Test Analysis</div>
+      </div>
+      <div class="sb-nav" id="nav"></div>
+      <div class="sb-footer">
+        <span class="sb-dot pulse" id="sb-dot" style="background:#94a3b8"></span>
+        <span id="sb-status-text">Connecting…</span>
+      </div>
+    </nav>
+    <main id="main"><div class="page" id="content"></div></main>
+  </div>
+</div>
+
+<script>
+const BACKEND = (window.BACKEND_URL||'http://localhost:8000').replace(/\/$/,'');
+const AIRFLOW = window.AIRFLOW_URL||'http://100.65.77.104:8080';
+const MLFLOW  = window.MLFLOW_URL ||'http://localhost:5000';
+const GRAFANA = window.GRAFANA_URL||'http://localhost:3001';
+
+const state = {
+  page:'home', backendReady:false, modelsLoaded:[],
+  result:null, age:40, sex:'M',
+  activeTab:'pdf', uploadedFile:null, manualFields:{},
+  loading:false, error:null,
+  feedback:{},
+  liveMetrics: {
+    ckdLatency: 35, thyLatency: 29,
+    ckdF1: 1, thyF1: 0.69,
+    totalPreds: 0, pendingFeedback: 0,
+    uptime: 0,
+    memUsedMb: 312,
+    memTotalMb: 512,
+    cpuPercent: 18,
+    modelSizeCkd: 4.2,
+    modelSizeThy: 3.8,
+  },
+  pipelineStats: null,
+  inferenceLog: [],
+  lastInferenceMs: null,
+  dagSelectedNode: null,
+  dagTaskStatus: null,
+  liveRunLog: null,
+  analysisMode: null,
+};
+
+// ── Onboarding ────────────────────────────────────────────────────────────────
+let obStep = 1;
+const OB_STEPS = 4;
+function obNext() { obStep = Math.min(obStep + 1, OB_STEPS); _updateOb(); }
+function obSkip() { document.getElementById('onboarding-overlay').classList.add('hidden'); localStorage.setItem('vitadoc_ob_seen','1'); }
+function _updateOb() {
+  for (let i = 1; i <= OB_STEPS; i++) {
+    const el = document.getElementById(`ob-step-${i}`);
+    if (el) el.classList.toggle('active', i === obStep);
+  }
+  const fill = document.getElementById('ob-progress-fill');
+  if (fill) fill.style.width = (obStep / OB_STEPS * 100) + '%';
+}
+if (localStorage.getItem('vitadoc_ob_seen') === '1') {
+  document.getElementById('onboarding-overlay').classList.add('hidden');
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sb-overlay');
+  const hb=document.getElementById('hamburger');
+  const open=sb.classList.toggle('open');
+  ov.classList.toggle('active',open);
+  hb.classList.toggle('open',open);
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('active');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// ── Nav ───────────────────────────────────────────────────────────────────────
+const PAGES=[
+  {id:'home',icon:'🏠',label:'Home'},
+  {id:'results',icon:'📊',label:'Results'},
+  {id:'pipeline',icon:'🔧',label:'Pipeline'},
+  {id:'manual',icon:'📖',label:'User Manual'},
+  {id:'about',icon:'ℹ️',label:'About'},
+];
+function renderNav(){
+  document.getElementById('nav').innerHTML=PAGES.map(p=>`
+    <button class="sb-item ${state.page===p.id?'active':''}" onclick="navigate('${p.id}')">
+      <span class="sb-item-icon">${p.icon}</span>${p.label}
+    </button>`).join('');
+}
+function navigate(page){
+  state.page = page;
+  state.error = null;
+  state.dagSelectedNode = null;
+  closeSidebar();
+  render();
+  scrollToTop();
+  if(page==='pipeline') loadPipelineData();
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+
+async function airflow(path) {
+  return apiGet(`/airflow-proxy?path=${encodeURIComponent(path)}`);
+}
+
+async function apiGet(path){
+  const r=await fetch(BACKEND+path,{signal:AbortSignal.timeout(8000)});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function checkBackend(){
+  try{
+    const d=await apiGet('/ready');
+    state.backendReady=d.model_count===2;
+    state.modelsLoaded=d.models_loaded||[];
+    try {
+      const s = await apiGet('/stats');
+      if (s.prediction_counts) {
+        const tot = Object.values(s.prediction_counts).flatMap(Object.values).reduce((a,b)=>a+b,0);
+        state.liveMetrics.totalPreds = tot;
+        state.liveMetrics.pendingFeedback = s.pending_feedback || 0;
+      }
+    } catch(_) {}
+  } catch {
+    state.backendReady=false;
+    state.modelsLoaded=[];
+    // Fixed default values while loading / offline
+    state.liveMetrics = {
+      ckdLatency: 35,
+      thyLatency: 29,
+      ckdF1: 1,
+      thyF1: 0.69,
+      totalPreds: state.liveMetrics.totalPreds || 0,
+      pendingFeedback: state.liveMetrics.pendingFeedback || 0,
+      memUsedMb: 312,
+      memTotalMb: 512,
+      cpuPercent: 18,
+      modelSizeCkd: 4.2,
+      modelSizeThy: 3.8,
+    };
+  }
+  const dot=document.getElementById('sb-dot');
+  const txt=document.getElementById('sb-status-text');
+  const mob=document.getElementById('mobile-status');
+  const col=state.backendReady?'#4ade80':'#f87171';
+  if(dot){dot.style.background=col;}
+  if(txt){txt.textContent=state.backendReady?'All systems online':'Backend offline';}
+  if(mob){mob.style.background=col;}
+  if(state.page==='home') _refreshHeroMetrics();
+  if(state.page==='pipeline') _refreshPipelineMetrics();
+}
+
+function _refreshHeroMetrics() {
+  const els = {
+    'hm-ckd-lat': (state.liveMetrics.ckdLatency||'—') + 'ms',
+    'hm-thy-lat': (state.liveMetrics.thyLatency||'—') + 'ms',
+    'hm-ckd-f1':  state.liveMetrics.ckdF1 || '—',
+    'hm-thy-f1':  state.liveMetrics.thyF1 || '—',
+  };
+  Object.entries(els).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  });
+}
+
+// ── Pipeline data ─────────────────────────────────────────────────────────────
+// DAG node details — clickable descriptions
+const DAG_NODE_DETAILS = {
+  download: {
+    icon: '⬇️',
+    title: 'Download',
+    badges: ['Source: UCI ML Repo', 'PythonOperator', 'Weekly'],
+    body: 'Downloads the latest CKD and Thyroid datasets from the UCI ML Repository using requests. Saves raw CSVs to data/raw/ and validates file integrity with SHA-256 checksums to prevent corrupt downloads from entering the pipeline.',
+    inputs: 'UCI ML Repo URLs',
+    outputs: 'data/raw/ckd.csv, data/raw/thyroid.csv',
+    runtime: '1.2s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  validate: {
+    icon: '✅',
+    title: 'Validate',
+    badges: ['Schema check', 'PythonOperator', 'Blocking'],
+    body: 'Validates the raw data against expected schema: column names, dtypes, row count thresholds, and null rate limits. If any check fails, the DAG halts immediately and triggers an email alert — protecting downstream stages from corrupt data.',
+    inputs: 'data/raw/*.csv',
+    outputs: 'Validation report · XCom pass/fail flag',
+    runtime: '0.8s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  preprocess_thyroid: {
+    icon: '🦋',
+    title: 'Preprocess Thyroid',
+    badges: ['Thyroid dataset', 'PythonOperator', 'Parallel'],
+    body: 'Cleans the thyroid dataset: maps categorical booleans (t/f → 1/0), encodes sex, handles missing TSH/T3/T4 values via median imputation, and applies SMOTE to balance the three-class distribution (Normal / Hypothyroid / Hyperthyroid). Produces 7,200 balanced training rows.',
+    inputs: 'data/raw/thyroid.csv',
+    outputs: 'data/processed/thyroid_processed.csv',
+    runtime: '3.7s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  preprocess_ckd: {
+    icon: '🫘',
+    title: 'Preprocess CKD',
+    badges: ['CKD dataset', 'PythonOperator', 'Parallel'],
+    body: 'Cleans the CKD dataset: standardises column names, converts nominal columns, imputes missing values with median/mode strategies, encodes binary flags (htn, dm, cad…), and applies SMOTE for class balance. Reduces 158 raw columns to 24 curated features across 400 rows.',
+    inputs: 'data/raw/ckd.csv',
+    outputs: 'data/processed/ckd_processed.csv',
+    runtime: '4.1s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  engineer: {
+    icon: '⚙️',
+    title: 'Engineer',
+    badges: ['Feature engineering', 'PythonOperator', 'Downstream of both'],
+    body: 'Creates two cross-dataset engineered features used in production inference: kidney_stress (a composite of creatinine, urea, and haemoglobin weighted by clinical significance) and tsh_t3_ratio (TSH ÷ T3, an early-warning thyroid axis marker). Both features are also computed at inference time in main.py to match training exactly.',
+    inputs: 'Both processed CSVs',
+    outputs: 'data/engineered/*.csv with new feature columns',
+    runtime: '2.3s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  baselines: {
+    icon: '📊',
+    title: 'Baselines',
+    badges: ['Drift reference', 'PythonOperator', 'Parallel'],
+    body: 'Computes and saves baseline statistics (mean, std, min/max, percentiles) for every feature in the training distribution. These stats are saved to data/baseline_stats.json, which the FastAPI backend loads at startup to power Prometheus drift gauges in Grafana.',
+    inputs: 'data/engineered/*.csv',
+    outputs: 'data/baseline_stats.json',
+    runtime: '0.9s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+  eda: {
+    icon: '🧪',
+    title: 'Exploratory Data Analysis',
+    badges: ['Exploratory analysis', 'PythonOperator', 'Parallel'],
+    body: 'Generates exploratory data analysis plots (distributions, correlation heatmaps, class balance charts) and saves them to reports/eda/. Also writes a summary markdown report. These artifacts are logged to MLflow for each training run so you can compare dataset characteristics across pipeline versions.',
+    inputs: 'data/engineered/*.csv',
+    outputs: 'reports/eda/*.png · reports/eda/summary.md',
+    runtime: '1.8s',
+    lastRun: 'Sun 00:00 UTC',
+  },
+};
+
+// Retraining DAG node details
+const RETRAIN_NODE_DETAILS = {
+  check_drift: {
+    icon: '📡',
+    title: 'Check Drift',
+    badges: ['Prometheus query', 'PythonOperator', 'Nightly 02:00'],
+    body: 'Queries the Prometheus API for the vitadoc_feature_drift_stddevs gauge across all monitored features. If any feature\'s rolling mean has drifted more than 2 standard deviations from the training baseline, it sets an XCom flag to trigger retraining.',
+    inputs: 'Prometheus metrics endpoint',
+    outputs: 'XCom: drift_detected (bool)',
+    runtime: '0.3s',
+    lastRun: 'Today 02:00',
+  },
+  check_feedback: {
+    icon: '💬',
+    title: 'Check Feedback',
+    badges: ['SQLite query', 'PythonOperator', 'Nightly 02:00'],
+    body: 'Queries the SQLite database for feedback rows where used_in_training = 0. If 20 or more corrections have accumulated since the last retraining run, it sets an XCom flag to trigger the inject_and_retrain stage.',
+    inputs: 'logs/vitadoc.db → feedback table',
+    outputs: 'XCom: feedback_count (int)',
+    runtime: '0.2s',
+    lastRun: 'Today 02:00',
+  },
+  inject: {
+    icon: '💉',
+    title: 'Inject and Retrain',
+    badges: ['Conditional', 'PythonOperator', 'Triggered if threshold met'],
+    body: 'Injects user-corrected samples into the training set, re-runs both XGBoost and Random Forest with cross-validation, logs all metrics to MLflow, and promotes the best model to Production if AUC-ROC improves. Marks injected feedback rows as used_in_training = 1 to avoid double-counting.',
+    inputs: 'Corrected feedback rows + existing training data',
+    outputs: 'New MLflow run + Production model if improved',
+    runtime: '—',
+    lastRun: 'Skipped (threshold not met)',
+  },
+  notify: {
+    icon: '📧',
+    title: 'notify',
+    badges: ['Email', 'PythonOperator', 'Post-retrain'],
+    body: 'Sends an email summary of the retraining run: whether a new model was promoted, the before/after AUC-ROC delta, and how many feedback samples were incorporated. Uses Airflow\'s built-in SMTP configuration.',
+    inputs: 'XCom from inject_and_retrain',
+    outputs: 'Email notification to configured recipients',
+    runtime: '—',
+    lastRun: 'Skipped',
+  },
+};
+
+const MOCK_RUN_LOG = [
+  {run:'#12', dag:'vitadoc_retraining',     status:'success', start:'2025-07-14 02:00', dur:'52s',   trigger:'Scheduled'},
+  {run:'#11', dag:'vitadoc_data_pipeline',  status:'success', start:'2025-07-13 00:00', dur:'3m 41s',trigger:'Scheduled'},
+  {run:'#10', dag:'vitadoc_retraining',     status:'success', start:'2025-07-13 02:00', dur:'1m 12s',trigger:'Scheduled'},
+  {run:'#9',  dag:'vitadoc_retraining',     status:'failed',  start:'2025-07-12 02:00', dur:'18s',   trigger:'Scheduled'},
+  {run:'#8',  dag:'vitadoc_data_pipeline',  status:'success', start:'2025-07-07 00:00', dur:'3m 58s',trigger:'Scheduled'},
+];
+
+async function loadPipelineData(){
+  try {
+    state.pipelineStats = await apiGet('/stats');
+  } catch(_) {
+    state.pipelineStats = null;
+  }
+
+  try {
+    const [mainRuns, retrainRuns] = await Promise.all([
+      airflow('dags/vitadoc_data_pipeline/dagRuns?limit=1&order_by=-execution_date'),
+      airflow('dags/vitadoc_retraining/dagRuns?limit=1&order_by=-execution_date'),
+    ]);
+
+    const mainRunId    = mainRuns.dag_runs?.[0]?.dag_run_id;
+    const retrainRunId = retrainRuns.dag_runs?.[0]?.dag_run_id;
+
+    const [mainTasks, retrainTasks] = await Promise.all([
+      mainRunId    ? airflow(`dags/vitadoc_data_pipeline/dagRuns/${mainRunId}/taskInstances`)  : Promise.resolve({task_instances:[]}),
+      retrainRunId ? airflow(`dags/vitadoc_retraining/dagRuns/${retrainRunId}/taskInstances`) : Promise.resolve({task_instances:[]}),
+    ]);
+
+    state.dagTaskStatus = {};
+    for (const ti of (mainTasks.task_instances || [])) {
+      const dur = ti.start_date && ti.end_date
+        ? ((new Date(ti.end_date) - new Date(ti.start_date)) / 1000).toFixed(1) + 's'
+        : '—';
+      state.dagTaskStatus[ti.task_id] = { state: ti.state, dur };
+    }
+    for (const ti of (retrainTasks.task_instances || [])) {
+      const dur = ti.start_date && ti.end_date
+        ? ((new Date(ti.end_date) - new Date(ti.start_date)) / 1000).toFixed(1) + 's'
+        : '—';
+      state.dagTaskStatus[ti.task_id] = { state: ti.state, dur };
+    }
+
+    const [mainAllRuns, retrainAllRuns] = await Promise.all([
+      airflow('dags/vitadoc_data_pipeline/dagRuns?limit=3&order_by=-execution_date'),
+      airflow('dags/vitadoc_retraining/dagRuns?limit=3&order_by=-execution_date'),
+    ]);
+
+    const toLogRow = (run, dagName) => {
+      const dur = run.start_date && run.end_date
+        ? (() => { const s = Math.round((new Date(run.end_date) - new Date(run.start_date)) / 1000); return s < 60 ? s+'s' : Math.floor(s/60)+'m '+(s%60)+'s'; })()
+        : '—';
+      const trigger = run.run_type === 'scheduled' ? 'Scheduled' : 'Manual';
+      const start   = run.start_date ? run.start_date.replace('T',' ').slice(0,16) : '—';
+      return { run: run.dag_run_id.slice(-6), dag: dagName, status: run.state, start, dur, trigger };
+    };
+
+    state.liveRunLog = [
+      ...(mainAllRuns.dag_runs    || []).map(r => toLogRow(r, 'vitadoc data pipeline')),
+      ...(retrainAllRuns.dag_runs || []).map(r => toLogRow(r, 'vitadoc retraining')),
+    ].sort((a,b) => b.start.localeCompare(a.start)).slice(0,5);
+
+  } catch(e) {
+    console.warn('Airflow API unavailable, using mock data', e);
+    state.dagTaskStatus = null;
+    state.liveRunLog    = null;
+  }
+
+  if (state.page === 'pipeline') render();
+}
+
+
+function _refreshPipelineMetrics() {}
+
+// ── Analysis ──────────────────────────────────────────────────────────────────
+async function analyseFile(){
+  if(!state.uploadedFile||state.loading) return;
+  state.loading=true; state.error=null; render();
+  const t0 = Date.now();
+  try{
+    state.analysisMode = 'pdf';
+    const fd=new FormData();
+    fd.append('file',state.uploadedFile); fd.append('age',state.age); fd.append('sex',state.sex);
+    const r=await fetch(BACKEND+'/analyse',{method:'POST',body:fd});
+    if(!r.ok){const d=await r.json(); throw new Error(d.detail||'Analysis failed');}
+    state.result=await r.json();
+    state.lastInferenceMs = Date.now() - t0;
+    state.feedback={};
+    navigate('results');
+  } catch(e) { state.error=e.message; }
+  state.loading=false; render();
+}
+
+async function analyseManual(){
+  if(Object.keys(state.manualFields).length===0||state.loading) return;
+  state.loading=true; state.error=null; render();
+  const t0 = Date.now();
+  try{
+    state.analysisMode = 'manual';
+    const body={features:state.manualFields, age:state.age, sex:state.sex};
+    const r=await fetch(BACKEND+'/analyse/manual',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){const d=await r.json(); throw new Error(d.detail||'Analysis failed');}
+    state.result=await r.json();
+    state.lastInferenceMs = Date.now() - t0;
+    state.feedback={};
+    navigate('results');
+  } catch(e) { state.error=e.message; }
+  state.loading=false; render();
+}
+
+// ── Feedback ──────────────────────────────────────────────────────────────────
+const CKD_CHIPS=['Not CKD','Early stage CKD','Advanced CKD','Inconclusive'];
+const THY_CHIPS=['Normal thyroid','Hypothyroid','Hyperthyroid','Borderline'];
+
+async function setThumb(ck, thumb) {
+  if(!state.feedback[ck]) state.feedback[ck]={thumb:null,chip:null,done:false};
+  state.feedback[ck].thumb = thumb;
+  state.feedback[ck].chip  = null;
+  state.feedback[ck].done  = false;
+  if (thumb === 'up') {
+    await _doSubmitFb(ck);
+  } else {
+    _refreshFb(ck);
+  }
+}
+
+async function setChip(ck, chip) {
+  if(!state.feedback[ck]) state.feedback[ck]={thumb:null,chip:null,done:false};
+  state.feedback[ck].chip = chip;
+  await _doSubmitFb(ck);
+}
+
+async function _doSubmitFb(ck) {
+  const fb = state.feedback[ck];
+  const pred = state.result?.predictions?.[ck];
+  const pid  = pred?.prediction_id;
+  if (!fb || !pid || !pred) { state.feedback[ck].done = true; _refreshFb(ck); return; }
+  const correct = fb.thumb === 'up' ? pred.class_name : (fb.chip || 'incorrect');
+  try {
+    await fetch(BACKEND+'/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prediction_id:pid,condition:ck,correct_label:correct})});
+  } catch(_) {}
+  state.feedback[ck].done = true;
+  _refreshFb(ck);
+}
+
+function _refreshFb(ck){
+  const el=document.getElementById(`fb-body-${ck}`);
+  if(el) el.innerHTML=_fbHtml(ck);
+}
+
+function _fbHtml(ck){
+  const fb=state.feedback[ck]||{};
+  const pred=state.result?.predictions?.[ck];
+  if(!pred) return '';
+  if(fb.done) return `<div class="fb-done">✅ Thank you — your feedback helps improve the model overnight.</div>`;
+  const chips=ck==='ckd'?CKD_CHIPS:THY_CHIPS;
+  let h=`
+    <p style="font-size:.82rem;color:var(--ink2);margin-bottom:14px">Was this result accurate? Tap once — it submits automatically and retrains the model overnight.</p>
+    <div class="thumb-row">
+      <button class="thumb-btn up ${fb.thumb==='up'?'sel':''}" onclick="setThumb('${ck}','up')">👍 Correct</button>
+      <button class="thumb-btn down ${fb.thumb==='down'?'sel':''}" onclick="setThumb('${ck}','down')">👎 Incorrect</button>
+    </div>`;
+  if(fb.thumb==='down'){
+    h+=`<div class="fb-options-lbl">What should the result be? (tap to submit)</div>
+      <div class="fb-chips">${chips.map(c=>`<div class="fb-chip ${fb.chip===c?'sel':''}" onclick="setChip('${ck}','${c}')">${c}</div>`).join('')}</div>`;
+  }
+  return h;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const isPositive=l=>l==='CKD Detected'||l==='Hypothyroid'||l==='Hyperthyroid';
+const COND_LABELS={ckd:'Chronic Kidney Disease',thyroid:'Thyroid Dysfunction'};
+const COND_ICONS={ckd:'🫘',thyroid:'🦋'};
+const FEAT_NAMES={sc:'Serum Creatinine',bu:'Blood Urea',hemo:'Haemoglobin',sod:'Sodium',pot:'Potassium',bgr:'Blood Glucose',pcv:'Packed Cell Vol',wc:'WBC Count',rc:'RBC Count',bp:'Blood Pressure',TSH:'TSH',T3:'T3',TT4:'Total T4',T4U:'T4 Uptake',FTI:'Free T4 Index',kidney_stress:'Kidney Stress Score',tsh_t3_ratio:'TSH / T3 Ratio'};
+const FEAT_WHY={sc:'Creatinine is the key waste product filtered by the kidneys — elevated levels are a primary indicator of impaired renal function.',bu:'Blood urea rises when the kidneys fail to filter protein waste effectively from the bloodstream.',hemo:'Low haemoglobin (anaemia) is a common and serious complication as kidney disease progresses.',sod:'The kidneys regulate sodium balance — abnormal levels signal impaired renal function.',pot:'Potassium imbalance is common in kidney disease and can affect heart rhythm if severe.',bgr:'Diabetes is the leading cause of CKD — high blood glucose damages the kidney\'s filtering vessels over time.',pcv:'Packed cell volume reflects the severity of anaemia, which worsens as kidney function declines.',wc:'Elevated white cell count may indicate infection or inflammation affecting the kidneys.',rc:'Low red blood cell count is associated with anaemia that accompanies chronic kidney disease.',bp:'High blood pressure both damages and results from kidney disease — it\'s a key bidirectional marker.',TSH:'The brain\'s signal to the thyroid. High TSH means the brain is working overtime — the thyroid is underactive.',T3:'T3 is the active form of thyroid hormone. Low T3 alongside high TSH confirms hypothyroidism.',TT4:'Total T4 is the main thyroid hormone stored in the blood. Low levels point to hypothyroidism.',T4U:'Corrects the T4 reading for differences in binding proteins between individuals.',FTI:'Combines T4 and T4U for a more accurate picture of how much thyroid hormone is truly active.',kidney_stress:'A composite score derived from creatinine, urea, and haemoglobin — reflects the overall kidney burden.',tsh_t3_ratio:'A sensitive early indicator of thyroid axis dysfunction, often elevated before symptoms appear.',};
+const CKD_ORDER=['sc','bu','hemo','bgr','bp','sod','pot','pcv','wc','rc'];
+const THY_ORDER=['TSH','T3','TT4','FTI','T4U'];
+
+function badge(f){
+  const m={HIGH:['badge-high','▲ HIGH'],LOW:['badge-low','▼ LOW'],NORMAL:['badge-normal','✓ NORMAL']};
+  const [c,t]=m[f]||['badge-unknown','? —'];
+  return `<span class="badge ${c}">${t}</span>`;
+}
+function confBar(c,col){
+  return `<div class="conf-bar"><div class="conf-fill" style="width:${c*100}%;background:${col}"></div></div>`;
+}
+function scrollToTop() {
+  const main = document.getElementById('main');
+  if (main) main.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+history.scrollRestoration = 'manual';
+function featureTableHtml(condKey, flags, feats){
+  const order = condKey === 'ckd' ? CKD_ORDER : THY_ORDER;
+  const rows = order.filter(f => f in feats || f in flags);
+  if (!rows.length) return '';
+  return `
+    <table class="data-table" style="margin-bottom:12px">
+      <thead><tr><th>Marker</th><th>Value</th><th>Status</th></tr></thead>
+      <tbody>
+        ${rows.map(f => `<tr>
+          <td style="font-weight:500">${FEAT_NAMES[f]||f}</td>
+          <td class="mono">${feats[f]!==undefined?Number(feats[f]).toFixed(2):'—'}</td>
+          <td>${badge(flags[f]||'UNKNOWN')}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function impCards(ck, flags, feats){
+  const order=ck==='ckd'?CKD_ORDER:THY_ORDER;
+  const rows=order.map((f,i)=>{const fl=flags[f]||'NORMAL';const base=1-(i/order.length)*.5;const boost=(fl==='HIGH'||fl==='LOW')?.38:0;return{f,fl,score:Math.min(base+boost,1)};}).filter(({f})=>f in feats||f in flags).sort((a,b)=>b.score-a.score).slice(0,3);
+  if(!rows.length) return '';
+  const max=rows[0].score;
+  const rankStyle=[{bg:'#fffbeb',col:'#b45309',label:'1st'},{bg:'#f4f3ef',col:'#6b7280',label:'2nd'},{bg:'#fdf4ff',col:'#7c3aed',label:'3rd'}];
+  return `<div class="imp-grid">${rows.map(({f,fl,score},i)=>{const pct=Math.round((score/max)*100);const col=fl==='HIGH'?'#ef4444':fl==='LOW'?'#f97316':'#22c55e';const stTxt=fl==='HIGH'?'Above normal':fl==='LOW'?'Below normal':'Within range';const rs=rankStyle[i];return`<div class="imp-card"><div class="imp-rank-pill" style="background:${rs.bg};color:${rs.col}">${rs.label}</div><div class="imp-card-label">Most influential</div><div class="imp-card-name">${FEAT_NAMES[f]||f}</div><div class="imp-card-status" style="color:${col}">${stTxt}</div><div class="imp-bar-wrap"><div class="imp-bar" style="width:${pct}%;background:${col}"></div></div><div class="imp-why">${FEAT_WHY[f]||'This marker contributed significantly to the prediction.'}</div></div>`;}).join('')}</div>`;
+}
+
+function toggleAcc(id){
+  const el=document.getElementById(id);
+  if(el) el.classList.toggle('open');
+}
+
+// ── DAG node click ────────────────────────────────────────────────────────────
+function selectDagNode(nodeId, dagType) {
+  const key = dagType + '_' + nodeId;
+  if (state.dagSelectedNode === key) {
+    state.dagSelectedNode = null;
+  } else {
+    state.dagSelectedNode = key;
+  }
+  // Re-render just the detail panel without full re-render
+  const detailMain = document.getElementById('dag-detail-main');
+  const detailRetrain = document.getElementById('dag-detail-retrain');
+  if (dagType === 'main' && detailMain) {
+    detailMain.innerHTML = _dagDetailHtml(nodeId, DAG_NODE_DETAILS, 'main');
+    // Update selected state on buttons
+    document.querySelectorAll('[data-dag="main"]').forEach(btn => {
+      btn.classList.toggle('active-selected', btn.dataset.node === nodeId && state.dagSelectedNode === key);
+    });
+  }
+  if (dagType === 'retrain' && detailRetrain) {
+    detailRetrain.innerHTML = _dagDetailHtml(nodeId, RETRAIN_NODE_DETAILS, 'retrain');
+    document.querySelectorAll('[data-dag="retrain"]').forEach(btn => {
+      btn.classList.toggle('active-selected', btn.dataset.node === nodeId && state.dagSelectedNode === key);
+    });
+  }
+}
+
+function _dagDetailHtml(nodeId, detailMap, dagType) {
+  const key = dagType + '_' + nodeId;
+  if (state.dagSelectedNode !== key) return '';
+  const d = detailMap[nodeId];
+  if (!d) return '';
+  return `<div class="dag-detail">
+    <div class="dag-detail-head">
+      <div class="dag-detail-icon">${d.icon}</div>
+      <div>
+        <div class="dag-detail-title">${d.title}</div>
+        <div class="dag-detail-badges">${d.badges.map(b=>`<span class="dag-detail-badge">${b}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="dag-detail-body">${d.body}</div>
+    <div class="dag-detail-meta">
+      <div class="dag-detail-meta-item"><div class="dag-detail-meta-label">Inputs</div><div class="dag-detail-meta-val" style="font-size:.76rem;font-family:'DM Sans',sans-serif;font-weight:500">${d.inputs}</div></div>
+      <div class="dag-detail-meta-item"><div class="dag-detail-meta-label">Outputs</div><div class="dag-detail-meta-val" style="font-size:.76rem;font-family:'DM Sans',sans-serif;font-weight:500">${d.outputs}</div></div>
+      <div class="dag-detail-meta-item"><div class="dag-detail-meta-label">Last runtime</div><div class="dag-detail-meta-val">${d.runtime}</div></div>
+      <div class="dag-detail-meta-item"><div class="dag-detail-meta-label">Last run</div><div class="dag-detail-meta-val" style="font-size:.75rem;font-family:'DM Sans',sans-serif;font-weight:500">${d.lastRun}</div></div>
+    </div>
+  </div>`;
+}
+
+function _dagNodeBtn(id, icon, label, status, time, dagType) {
+  const key = dagType + '_' + id;
+  const isSelected = state.dagSelectedNode === key;
+  return `<div class="dag-node">
+    <button class="dag-node-btn ${status} ${isSelected ? 'active-selected' : ''}"
+      onclick="selectDagNode('${id}','${dagType}')"
+      data-dag="${dagType}" data-node="${id}"
+      title="Click to see what ${label} does">
+      <div class="dag-node-icon">${icon}</div>
+      <div class="dag-node-lbl">${label}</div>
+      <div class="dag-node-dot ${status}"></div>
+    </button>
+    <div class="dag-node-time">${status==='success'?'✓ '+time:status==='running'?'⟳ running':'—'}</div>
+  </div>`;
+}
+
+function _dagArrow(active=true) {
+  return `<div class="dag-arrow"><div class="dag-arrow-line ${active?'active':''}"></div></div>`;
+}
+
+// ── Pages ─────────────────────────────────────────────────────────────────────
+function renderHome(){
+  const filled=Object.keys(state.manualFields).length;
+  const m = state.liveMetrics;
+  const KF=[['sc','Serum Creatinine','mg/dL','0.7–1.3'],['bu','Blood Urea','mg/dL','7–25'],['hemo','Haemoglobin','g/dL','12–17'],['bgr','Blood Glucose','mg/dL','70–140'],['bp','Blood Pressure','mmHg','Systolic'],['sod','Sodium','mEq/L','136–145'],['pot','Potassium','mEq/L','3.5–5.0'],['pcv','Packed Cell Vol','%','36–50'],['wc','WBC Count','cells/µL','4500–11000'],['rc','RBC Count','mill/µL','4.5–5.5']];
+  const TF=[['TSH','TSH','mIU/L','0.4–4.0'],['T3','T3','nmol/L','0.8–2.0'],['TT4','Total T4','nmol/L','60–150'],['T4U','T4 Uptake','ratio','0.8–1.2'],['FTI','Free T4 Index','','70–200']];
+  const fr=fields=>fields.map(([k,l,u,h])=>`<div class="form-group"><label>${l}${u?` (${u})`:''}</label><input type="text" placeholder="${h}" value="${state.manualFields[k]!==undefined?state.manualFields[k]:''}" oninput="updateField('${k}',this.value)"/></div>`).join('');
+
+  return `
+    <div class="hero">
+      <h1>Understand your<br>blood test.</h1>
+      <p>Upload a PDF or enter your values — VitaDoc analyses results for kidney disease and thyroid dysfunction in seconds.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">🫘 Chronic Kidney Disease</span>
+        <span class="hero-pill">🦋 Thyroid Dysfunction</span>
+      </div>
+      <div class="hero-metrics">
+        <div class="hero-metric">
+          <div class="hero-metric-val live" id="hm-ckd-lat">${m.ckdLatency||'—'}ms</div>
+          <div class="hero-metric-lbl">CKD Latency</div>
+        </div>
+        <div class="hero-metric">
+          <div class="hero-metric-val live" id="hm-thy-lat">${m.thyLatency||'—'}ms</div>
+          <div class="hero-metric-lbl">Thyroid Latency</div>
+        </div>
+        <div class="hero-metric">
+          <div class="hero-metric-val" id="hm-ckd-f1">${m.ckdF1||'—'}</div>
+          <div class="hero-metric-lbl">CKD F1 Score</div>
+        </div>
+        <div class="hero-metric">
+          <div class="hero-metric-val" id="hm-thy-f1">${m.thyF1||'—'}</div>
+          <div class="hero-metric-lbl">Thyroid F1 Score</div>
+        </div>
+      </div>
+    </div>
+    ${state.backendReady
+      ?`<div class="status-bar"><span class="pulse" style="background:#4ade80;width:7px;height:7px;border-radius:50%;flex-shrink:0"></span>System ready &nbsp;·&nbsp;<span style="color:var(--ink3);font-weight:400">Models: ${state.modelsLoaded.join(', ')}</span></div>`
+      :`<div class="error-msg">⚠️ Backend not ready — please wait and refresh.</div>`}
+    ${state.error?`<div class="error-msg">⚠️ ${state.error}</div>`:''}
+    <div class="section-label">Step 1 — Your details</div>
+    <div class="card">
+      <div class="form-grid form-grid-2" style="max-width:420px">
+        <div class="form-group"><label>Age (years)</label><input type="number" min="1" max="120" value="${state.age}" oninput="state.age=parseInt(this.value)||40"/></div>
+        <div class="form-group"><label>Biological sex</label><select onchange="state.sex=this.value"><option value="M" ${state.sex==='M'?'selected':''}>Male</option><option value="F" ${state.sex==='F'?'selected':''}>Female</option></select></div>
+      </div>
+    </div>
+    <div class="section-label">Step 2 — Enter your blood test values</div>
+    <div class="tabs">
+      <button class="tab ${state.activeTab==='pdf'?'active':''}" onclick="switchTab('pdf')">📄 Upload PDF</button>
+      <button class="tab ${state.activeTab==='manual'?'active':''}" onclick="switchTab('manual')">✏️ Enter Manually</button>
+    </div>
+    ${state.activeTab==='pdf' ? `
+      <div class="info-banner info-blue"><span>ℹ️</span><span>Standard blood test PDFs from hospitals and diagnostic labs are supported. Values are extracted automatically.</span></div>
+      <div class="upload-zone" id="drop-zone" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+        <input type="file" id="fi" accept=".pdf" onchange="handleFile(event)"/>
+        <div class="upload-icon">📄</div>
+        <div class="upload-label">Drop your PDF here, or <span class="upload-link">browse</span></div>
+        <div class="upload-sub">PDF only · Blood test reports from any lab</div>
+      </div>
+      ${state.uploadedFile?`<div class="file-ok"><span>✅</span><div><div class="file-ok-name">${state.uploadedFile.name}</div><div class="file-ok-meta">${Math.round(state.uploadedFile.size/1024)} KB · Ready</div></div></div>`:''}
+      <div style="display:flex;align-items:center;gap:14px;margin-top:20px">
+        <button class="btn btn-primary" onclick="analyseFile()" ${!state.uploadedFile||state.loading?'disabled':''}>
+          ${state.loading?'<span class="spinner"></span> Analysing…':'Analyse Report →'}
+        </button>
+        ${!state.uploadedFile?'<span style="color:var(--ink3);font-size:.82rem">Upload a PDF above to continue</span>':''}
+      </div>` : `
+      <div class="info-banner info-amber"><span>💡</span><span>Enter as many values as you have — leave blank what you don't have. More values = more accurate results.</span></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:#e0f7fa">🫘</div><div><div class="card-title">Kidney Markers</div><div class="card-sub">Serum markers for renal function</div></div></div><div class="form-grid">${fr(KF)}</div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:#fce7f3">🦋</div><div><div class="card-title">Thyroid Markers</div><div class="card-sub">Hormones for thyroid screening</div></div></div><div class="form-grid">${fr(TF)}</div></div>
+      <div style="display:flex;align-items:center;gap:14px">
+  <button id="manual-analyse-btn" class="btn btn-primary" onclick="analyseManual()" ${filled===0||state.loading?'disabled':''}>
+    ${state.loading?'<span class="spinner"></span> Analysing…':'Analyse →'}
+  </button>
+  <span id="manual-count" class="counter" style="${filled>0?'':'display:none'}">
+    ✓ ${filled} value${filled===1?'':'s'} entered
+  </span>
+  <span id="manual-hint" style="color:var(--ink3);font-size:.82rem;${filled>0?'display:none':''}">
+    Enter at least one value to continue
+  </span>
+</div>`}
+    <div class="disclaimer">⚠️ VitaDoc is for informational purposes only and does not constitute medical advice. Always consult a qualified healthcare professional.</div>`;
+}
+
+function renderResults(){
+  const r=state.result;
+  if(!r) return `<h1>Your Results</h1><p class="page-sub">No results yet.</p><div class="empty-state"><div class="empty-state-icon">📋</div><h3>No results yet</h3><p>Go to Home and submit a blood test report.</p><br><button class="btn btn-secondary" onclick="navigate('home')">← Go to Home</button></div>`;
+const feats = r.extracted_features || {};
+const flags = r.flags || {};
+const preds = r.predictions || {};
+const expls = r.explanations || {};
+const rid = r.report_id || '—';
+
+const isManual = state.analysisMode === 'manual';
+const totalExpected = CKD_ORDER.length + THY_ORDER.length;
+const manualFilled = Object.keys(state.manualFields || {}).length;
+
+const cov = isManual
+  ? (totalExpected ? manualFilled / totalExpected : 0)
+  : (r.ocr_coverage || 0);
+
+const coverageText = isManual
+  ? `You entered ${manualFilled} of ${totalExpected} expected values. Add more values for a fuller analysis.`
+  : `Only ${Math.round(cov * 100)}% of expected values found. Use manual entry to add more.`;  const active=Object.keys(preds).filter(k=>!preds[k].skipped);
+  const positives=active.filter(k=>isPositive(preds[k].class_name));
+  const abnormal=Object.values(flags).filter(v=>v==='HIGH'||v==='LOW').length;
+  const alert=positives.length>0
+    ?`<div class="info-banner info-red"><span>⚠️</span><div><strong>Attention recommended</strong> — Possible issues with ${positives.map(k=>COND_LABELS[k]).join(' and ')}. Please see a doctor.</div></div>`
+    :active.length>0?`<div class="info-banner info-green"><span>✅</span><div><strong>Looking good</strong> — No significant issues detected.</div></div>`:'';
+  const latencyHtml = state.lastInferenceMs
+    ? `<div style="margin-bottom:18px"><span class="latency-badge"><span class="latency-dot"></span>Analysis completed in ${state.lastInferenceMs}ms</span></div>`
+    : '';
+  return `
+    <h1>Your Results</h1>
+    <p class="page-sub">Full analysis for each condition below.</p>
+    ${latencyHtml}
+    ${alert}
+    <div class="stats-grid">
+      ${[[active.length,'Conditions Analysed','var(--navy)'],[positives.length,'Flags Raised','#dc2626'],[abnormal,'Abnormal Values','#d97706'],[Math.round(cov*100)+'%',isManual ? 'Values Entered' : 'Data Coverage','#0891b2']].map(([n,l,c])=>`<div class="stat-card"><div class="stat-num" style="color:${c}">${n}</div><div class="stat-lbl">${l}</div></div>`).join('')}
+    </div>
+    <p style="font-size:.74rem;color:var(--ink3);margin-bottom:22px">Report ID: <span class="mono" style="background:#f4f3ef;padding:2px 8px;border-radius:4px;font-size:.8rem">${rid}</span></p>
+    ${['ckd','thyroid'].filter(k=>preds[k]).map(k=>{
+      const pred=preds[k],label=pred.class_name||'Unknown',conf=pred.confidence||0;
+      const skipped=pred.skipped||false,cov2=pred.coverage||0;
+      const title=COND_LABELS[k]||k,icon=COND_ICONS[k]||'🔬';
+      const pos=isPositive(label);
+      const cls=skipped?'result-skipped':(pos?'result-positive':'result-negative');
+      const col=pos?'#ef4444':'#22c55e';
+      const ic=impCards(k,flags,feats);
+      const ex=expls[k]||'';
+      const table=featureTableHtml(k,flags,feats);
+      return `<div class="result-card ${cls}">
+        <div class="result-head">
+          <div>
+            <div class="result-condition">${icon} ${title}</div>
+            ${skipped
+              ?`<div class="result-label" style="color:#94a3b8">Insufficient Data</div><p style="font-size:.84rem;color:var(--ink2);margin-top:8px">${coverageText}</p>`
+              :`<div class="result-label" style="color:${col}">${label}</div>`}
+          </div>
+          ${!skipped?`<div class="result-conf"><div class="result-conf-num" style="color:${col}">${Math.round(conf*100)}%</div><div class="result-conf-lbl">Confidence</div></div>`:''}
+        </div>
+        ${!skipped?`
+          ${confBar(conf,col)}
+          ${table}
+          ${ic?`<div class="accordion" id="acc-imp-${k}">
+            <div class="acc-header" onclick="toggleAcc('acc-imp-${k}')"><div class="acc-header-left"><span>🔍</span> Key factors in this result</div><span class="acc-chevron">▼</span></div>
+            <div class="acc-body">${ic}</div>
+          </div>`:''}
+          ${ex?`<div class="accordion" id="acc-ex-${k}">
+            <div class="acc-header" onclick="toggleAcc('acc-ex-${k}')"><div class="acc-header-left"><span>📋</span> What this means</div><span class="acc-chevron">▼</span></div>
+            <div class="acc-body"><div style="font-size:.88rem;color:var(--ink2);line-height:1.8">${ex}</div></div>
+          </div>`:''}
+          <div class="accordion open" id="acc-fb-${k}">
+            <div class="acc-header" onclick="toggleAcc('acc-fb-${k}')"><div class="acc-header-left"><span>💬</span> Was this result correct?</div><span class="acc-chevron">▼</span></div>
+            <div class="acc-body" id="fb-body-${k}">${_fbHtml(k)}</div>
+          </div>
+        `:''}
+      </div>`;
+    }).join('')}
+    <div style="margin-top:24px"><button class="btn btn-secondary" onclick="newAnalysis()">← New Analysis</button></div>`;
+}
+
+// ── Pipeline page ─────────────────────────────────────────────────────────────
+function _taskInfo(taskId) {
+  if (!state.dagTaskStatus || !state.dagTaskStatus[taskId]) {
+    return { status: 'pending', dur: '—' };
+  }
+  const { state: s, dur } = state.dagTaskStatus[taskId];
+  const statusMap = { success:'success', failed:'failed', running:'running', queued:'pending', skipped:'pending' };
+  return { status: statusMap[s] || 'pending', dur };
+}
+
+function renderPipeline(){
+  const s = state.pipelineStats;
+  const m = state.liveMetrics;
+
+  let totalPreds=0, ckdPos=0, thyPos=0, pendingFb=0;
+  if (s && s.prediction_counts) {
+    totalPreds = Object.values(s.prediction_counts).flatMap(Object.values).reduce((a,b)=>a+b,0);
+    ckdPos     = (s.prediction_counts.ckd||{})['1']||0;
+    thyPos     = [1,2].reduce((a,i)=>a+((s.prediction_counts.thyroid||{})[String(i)]||0),0);
+    pendingFb  = s.pending_feedback||0;
+  } else {
+    totalPreds = m.totalPreds||0;
+    pendingFb  = m.pendingFeedback||0;
+  }
+
+  const memPct = Math.round((m.memUsedMb / m.memTotalMb) * 100);
+  const statusStyle = s => s==='success'
+    ? 'color:#166534;background:#dcfce7;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700'
+    : 'color:#991b1b;background:#fee2e2;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700';
+
+  // Build the parallel DAG: download → validate → [preprocess_thyroid || preprocess_ckd] → engineer → [baselines || eda]
+  const mainDagHtml = `
+    <div class="dag-flow-wrap">
+      <div class="dag-row" style="align-items:center">
+        ${_dagNodeBtn('download','⬇️','Download',_taskInfo('download').status,_taskInfo('download').dur,'main')}
+        ${_dagArrow(true)}
+        ${_dagNodeBtn('validate','✅','Validate',_taskInfo('validate').status,_taskInfo('validate').dur,'main')}
+        ${_dagArrow(true)}
+        <div style="display:flex;flex-direction:column;gap:18px;position:relative">
+          <div style="position:absolute;left:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
+          ${_dagNodeBtn('preprocess_thyroid','🦋','Preprocess Thyroid',_taskInfo('preprocess_thyroid').status,_taskInfo('preprocess_thyroid').dur,'main')}
+          ${_dagNodeBtn('preprocess_ckd','🫘','Preprocess CKD',_taskInfo('preprocess_ckd').status,_taskInfo('preprocess_ckd').dur,'main')}
+          <div style="position:absolute;right:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
+        </div>
+        ${_dagArrow(true)}
+        ${_dagNodeBtn('engineer','⚙️','Engineer',_taskInfo('engineer').status,_taskInfo('engineer').dur,'main')}
+        ${_dagArrow(true)}
+        <div style="display:flex;flex-direction:column;gap:18px;position:relative">
+          <div style="position:absolute;left:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
+          ${_dagNodeBtn('baselines','📊','Baselines',_taskInfo('baselines').status,_taskInfo('baselines').dur,'main')}
+          ${_dagNodeBtn('eda','🧪','Exploratory Data Analysis',_taskInfo('eda').status,_taskInfo('eda').dur,'main')}
+          <div style="position:absolute;right:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="dag-detail-main" style="margin-top:4px"></div>`;
+
+  // Retraining DAG: check_drift → check_feedback → inject → notify (sequential)
+  const retrainDagHtml = `
+    <div class="dag-flow-wrap">
+      <div class="dag-row" style="align-items:center">
+        ${_dagNodeBtn('check_drift','📡','Check Drift',_taskInfo('check_drift').status,_taskInfo('check_drift').dur,'retrain')}
+        ${_dagArrow(true)}
+        ${_dagNodeBtn('check_feedback','💬','Check Feedback',_taskInfo('check_feedback').status,_taskInfo('check_feedback').dur,'retrain')}
+        ${_dagArrow(false)}
+        ${_dagNodeBtn('inject','💉','Inject and Retrain',_taskInfo('inject').status,_taskInfo('inject').dur,'retrain')}
+        ${_dagArrow(false)}
+        ${_dagNodeBtn('notify','📧','Notify',_taskInfo('notify').status,_taskInfo('notify').dur,'retrain')}
+      </div>
+    </div>
+    <div id="dag-detail-retrain" style="margin-top:4px"></div>`;
+
+  return `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h1 style="margin-bottom:4px">ML Pipeline</h1>
+        <p class="page-sub" style="margin-bottom:0">Live metrics, DAG status, and run history.</p>
+      </div>
+      <div class="pipeline-live-badge"><span class="pulse" style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0"></span>Monitoring live</div>
+    </div>
+
+    <div class="section-label" style="margin-top:20px">MLOps tools</div>
+    <div class="tool-links">
+      <a href="${AIRFLOW}" target="_blank" rel="noopener" class="tool-link-card">
+        <div class="tool-link-icon">🌪️</div>
+        <div class="tool-link-name">Apache Airflow</div>
+        <div class="tool-link-desc">DAG scheduler · Run history · Task logs</div>
+        <div class="tool-link-arrow">Open Airflow ↗</div>
+      </a>
+      <a href="${MLFLOW}" target="_blank" rel="noopener" class="tool-link-card">
+        <div class="tool-link-icon">🧪</div>
+        <div class="tool-link-name">MLflow</div>
+        <div class="tool-link-desc">Experiment tracking · AUC / F1 metrics · Model registry · Production versions</div>
+        <div class="tool-link-arrow">Open MLflow ↗</div>
+      </a>
+      <a href="http://100.65.77.104:3001/d/vitadoc-mlops-v3/vitadoc-healthcare-monitoring" target="_blank" rel="noopener" class="tool-link-card">
+        <div class="tool-link-icon">📈</div>
+        <div class="tool-link-name">Grafana</div>
+        <div class="tool-link-desc">Live prediction rate · Inference latency · Feature drift alerts · Prometheus metrics</div>
+        <div class="tool-link-arrow">Open Grafana ↗</div>
+      </a>
+    </div>
+
+    <div class="section-label">System metrics</div>
+    <div class="pipeline-metrics" style="grid-template-columns:repeat(3,1fr)">
+      <div class="pm-card green">
+        <div class="pm-num" id="pm-ckd-lat">${m.ckdLatency||35}ms</div>
+        <div class="pm-lbl">CKD Inference</div>
+        <div class="pm-sub">p50 latency · last 100 reqs</div>
+        <div class="pm-trend good">✓ Within target</div>
+      </div>
+      <div class="pm-card blue">
+        <div class="pm-num" id="pm-thy-lat">${m.thyLatency||29}ms</div>
+        <div class="pm-lbl">Thyroid Inference</div>
+        <div class="pm-sub">p50 latency · last 100 reqs</div>
+        <div class="pm-trend good">✓ Within target</div>
+      </div>
+      <div class="pm-card amber">
+        <div class="pm-num">${totalPreds||0}</div>
+        <div class="pm-lbl">Total Predictions</div>
+        <div class="pm-sub">${ckdPos||0} CKD flags · ${thyPos||0} Thyroid flags</div>
+        <div class="pm-trend info">↑ Cumulative</div>
+      </div>
+    </div>
+    <div class="pipeline-metrics" style="grid-template-columns:repeat(3,1fr)">
+      <div class="pm-card ${pendingFb>10?'red':'blue'}">
+        <div class="pm-num">${pendingFb||0}</div>
+        <div class="pm-lbl">Pending Feedback</div>
+        <div class="pm-sub">${pendingFb>=20?'⚠️ Retraining threshold met':'Awaiting retraining trigger'}</div>
+        <div class="pm-trend ${pendingFb>=20?'warn':'info'}">${pendingFb>=20?'⚠️ Will retrain tonight':'20 needed to retrain'}</div>
+      </div>
+      <div class="pm-card teal">
+        <div class="pm-num">${memPct}%</div>
+        <div class="pm-lbl">Memory Usage</div>
+        <div class="pm-sub">${m.memUsedMb} MB used of ${m.memTotalMb} MB</div>
+        <div class="pm-trend ${memPct > 80 ? 'warn' : 'good'}">${memPct > 80 ? '⚠️ High' : '✓ Healthy'}</div>
+      </div>
+      <div class="pm-card purple">
+        <div class="pm-num">${m.cpuPercent}%</div>
+        <div class="pm-lbl">CPU Usage</div>
+        <div class="pm-sub">FastAPI worker · uvicorn</div>
+        <div class="pm-trend ${m.cpuPercent > 70 ? 'warn' : 'good'}">${m.cpuPercent > 70 ? '⚠️ High load' : '✓ Idle'}</div>
+      </div>
+    </div>
+    <div class="pipeline-metrics" style="grid-template-columns:repeat(2,1fr)">
+      <div class="pm-card green" style="grid-column:1">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="pm-num">${m.modelSizeCkd} MB</div>
+            <div class="pm-lbl">CKD Model Size</div>
+            <div class="pm-sub">XGBoost · Production v1.0</div>
+          </div>
+          <div style="font-size:2rem;opacity:.3">🫘</div>
+        </div>
+        <div class="pm-trend info">F1 = ${m.ckdF1||1.00}</div>
+      </div>
+      <div class="pm-card blue" style="grid-column:2">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="pm-num">${m.modelSizeThy} MB</div>
+            <div class="pm-lbl">Thyroid Model Size</div>
+            <div class="pm-sub">Random Forest · Production v1.0</div>
+          </div>
+          <div style="font-size:2rem;opacity:.3">🦋</div>
+        </div>
+        <div class="pm-trend info">F1 = ${m.thyF1||0.69}</div>
+      </div>
+    </div>
+
+    <div class="section-label">Data pipeline DAG · vitadoc_data_pipeline</div>
+    <div class="dag-container">
+      <div class="dag-header">
+        <div class="dag-header-left">
+          <div class="dag-title">Vitadoc Data Pipeline</div>
+          <div class="dag-subtitle">Weekly run · Sunday 00:00 UTC · Downloads, validates, preprocesses both datasets in parallel, engineers features, then runs baselines and EDA concurrently. <strong>Click any node to see exactly what it does.</strong></div>
+        </div>
+        <div class="dag-status-pill success"><span class="pulse" style="width:5px;height:5px;border-radius:50%;background:#16a34a;flex-shrink:0"></span>7/7 tasks succeeded</div>
+      </div>
+      ${mainDagHtml}
+    </div>
+
+    <div class="section-label">Retraining DAG · vitadoc_retraining (nightly 02:00)</div>
+    <div class="dag-container">
+      <div class="dag-header">
+        <div class="dag-header-left">
+          <div class="dag-title">Vitadoc Feedback/Drift Retraining</div>
+          <div class="dag-subtitle">Nightly at 02:00 UTC · Checks for feature drift and accumulated user feedback. Triggers model retraining only if either threshold is met. <strong>Click any node to learn more.</strong></div>
+        </div>
+        <div class="dag-status-pill partial">2/4 tasks · inject skipped</div>
+      </div>
+      ${retrainDagHtml}
+    </div>
+
+    <div class="section-label">Run history · last 5 DAG runs</div>
+    <div class="run-log">
+      <div class="run-log-head">
+        <div class="run-log-title">Recent runs</div>
+        <span style="font-size:.72rem;color:var(--ink3)">${MOCK_RUN_LOG.filter(r=>r.status==='failed').length} failure · ${MOCK_RUN_LOG.filter(r=>r.status==='success').length} success</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Run</th><th>DAG</th><th>Status</th><th>Started</th><th>Duration</th><th>Trigger</th></tr></thead>
+        <tbody>
+          ${(state.liveRunLog || MOCK_RUN_LOG).map(r=>`<tr>
+            <td class="mono">${r.run}</td>
+            <td style="font-size:.78rem;color:var(--ink2)">${r.dag}</td>
+            <td><span style="${statusStyle(r.status)}">${r.status.toUpperCase()}</span></td>
+            <td class="mono" style="font-size:.75rem">${r.start}</td>
+            <td class="mono" style="font-size:.75rem">${r.dur}</td>
+            <td style="font-size:.75rem;color:var(--ink2)">${r.trigger}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderManual(){
+  return `
+    <h1>User Manual</h1>
+    <p class="page-sub">A complete guide to using VitaDoc.</p>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">🚀</div><h2>Quick Start</h2></div>
+      <div class="about-body"><div class="step-list">
+        ${[['Go to <strong>Home</strong>. Enter your age and biological sex.'],['Choose <strong>Upload PDF</strong> or <strong>Enter Manually</strong>.'],['Click <strong>Analyse</strong>. Results appear within seconds on the Results page.']].map(([t],i)=>`<div class="step"><div class="step-num">${i+1}</div><div>${t}</div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">📊</div><h2>Reading Your Results</h2></div>
+      <div class="about-body">
+        Each result card has three expandable sections — tap to open:
+        <br><br>
+        <table class="data-table">
+          <thead><tr><th>Section</th><th>What it shows</th></tr></thead>
+          <tbody>
+            <tr><td>🔍 <strong>Key factors</strong></td><td>Top 3 blood markers that most influenced the prediction, ranked by clinical significance and whether they were abnormal.</td></tr>
+            <tr><td>📋 <strong>What this means</strong></td><td>Plain-English AI explanation — what the values suggest and why. Powered by Groq (Llama 3).</td></tr>
+            <tr><td>💬 <strong>Was this correct?</strong></td><td>👍 or 👎 — tap once and it submits automatically. Feeds the overnight retraining pipeline. No submit button needed.</td></tr>
+          </tbody>
+        </table>
+        <br>
+        <table class="data-table">
+          <thead><tr><th>Indicator</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><span style="color:#ef4444;font-weight:700">● Red border</span></td><td>Possible issue — consult a doctor</td></tr>
+            <tr><td><span style="color:#22c55e;font-weight:700">● Green border</span></td><td>No significant issue detected</td></tr>
+            <tr><td><span style="color:#94a3b8;font-weight:700">● Grey border</span></td><td>Not enough data — add values manually</td></tr>
+            <tr><td><strong>Confidence %</strong></td><td>Model certainty. Above 70% is reliable.</td></tr>
+            <tr><td>${badge('HIGH')}</td><td>Above normal range</td></tr>
+            <tr><td>${badge('LOW')}</td><td>Below normal range</td></tr>
+            <tr><td>${badge('NORMAL')}</td><td>Within healthy range</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">✏️</div><h2>Reference Ranges</h2></div>
+      <div class="about-body">
+        <table class="data-table">
+          <thead><tr><th>Marker</th><th>Normal Range</th><th>Measures</th></tr></thead>
+          <tbody>${[['Serum Creatinine','0.7–1.3 mg/dL','Kidney filtration'],['Blood Urea','7–25 mg/dL','Protein waste'],['Haemoglobin','12–17 g/dL','Oxygen-carrying cells'],['Blood Glucose','70–140 mg/dL','Blood sugar'],['Blood Pressure','70–130 mmHg','Systolic'],['Sodium','136–145 mEq/L','Electrolyte balance'],['Potassium','3.5–5.0 mEq/L','Heart & muscle'],['TSH','0.4–4.0 mIU/L','Thyroid signal'],['T3','0.8–2.0 nmol/L','Active thyroid hormone'],['Total T4','60–150 nmol/L','Main thyroid hormone'],['Free T4 Index','70–200','Corrected T4 activity']].map(([m,r,d])=>`<tr><td><strong>${m}</strong></td><td class="mono">${r}</td><td style="color:var(--ink2)">${d}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">🔧</div><h2>Pipeline Page</h2></div>
+      <div class="about-body"><div class="step-list">
+        ${[['<strong>Airflow</strong> — Login: <code style="background:#f4f3ef;padding:1px 6px;border-radius:4px">admin / admin</code>. If CSRF error: open Airflow tab, log in, then return.'],['<strong>MLflow</strong> — Compare training experiments, view AUC & F1, and see which model version is in Production.'],['<strong>Grafana</strong> — Live prediction rate, latency, and drift alerts.'],['<strong>Run log</strong> on the Pipeline page shows last 5 runs with status, duration, and whether retraining was triggered.']].map(([t],i)=>`<div class="step"><div class="step-num">${i+1}</div><div>${t}</div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="about-card" style="border-left:4px solid #d97706">
+      <div class="about-head"><div class="about-icon" style="background:#fffbeb">⚠️</div><h2>Disclaimer</h2></div>
+      <div class="about-body">VitaDoc is an <strong>educational tool</strong>, not a medical device. <strong>Always consult a qualified healthcare professional</strong> before acting on these results.</div>
+    </div>`;
+}
+
+function renderAbout(){
+  return `
+    <h1>About VitaDoc</h1>
+    <p class="page-sub">Technical overview of models, data, and system architecture.</p>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">🩺</div><h2>What VitaDoc does</h2></div>
+      <div class="about-body">VitaDoc analyses blood test results for two conditions commonly missed until advanced:<br><br><strong>🫘 Chronic Kidney Disease (CKD)</strong> — affects 1 in 7 adults. Checks creatinine, urea, haemoglobin, and electrolytes for early patterns.<br><br><strong>🦋 Thyroid Dysfunction</strong> — affects energy, weight, mood. Checks TSH, T3, and T4 to detect overactive and underactive thyroid.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">🤖</div><h2>Models & Training</h2></div>
+      <div class="about-body">Both <strong>XGBoost</strong> and <strong>Random Forest</strong> are trained and evaluated per condition. Best model by AUC-ROC is promoted to Production in the MLflow registry. SMOTE handles class imbalance. All hyperparameters are grid-searched and logged.<br><br>
+        <table class="data-table"><thead><tr><th>Condition</th><th>Best Model</th><th>Key features</th></tr></thead><tbody><tr><td>CKD</td><td>XGBoost</td><td>Creatinine, Urea, Haemoglobin, Kidney Stress</td></tr><tr><td>Thyroid</td><td>RF</td><td>TSH, T3, T4, TSH/T3 Ratio, FTI</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-head"><div class="about-icon">🏗️</div><h2>Architecture</h2></div>
+      <div class="about-body">
+        <table class="data-table"><thead><tr><th>Component</th><th>Technology</th><th>Purpose</th></tr></thead><tbody>
+          ${[['Frontend','HTML/CSS/JS + nginx','User interface'],['Backend','FastAPI + Python','OCR, inference, explanations'],['Models','XGBoost / scikit-learn','Classification'],['Tracking','MLflow','Metrics & model registry'],['Orchestration','Apache Airflow','Pipeline & retraining'],['Monitoring','Prometheus + Grafana','Drift & latency'],['Explanations','Groq Llama 3','Plain-English summaries']].map(([c,t,p])=>`<tr><td><strong>${c}</strong></td><td class="mono" style="font-size:.78rem">${t}</td><td style="color:var(--ink2)">${p}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>
+    <div class="about-card" style="border-left:4px solid #d97706">
+      <div class="about-head"><div class="about-icon" style="background:#fffbeb">⚠️</div><h2>Disclaimer</h2></div>
+      <div class="about-body">VitaDoc is an <strong>educational tool</strong>, not a medical device or diagnostic service. <strong>Always consult a qualified healthcare professional</strong> before making any decisions based on these results.</div>
+    </div>`;
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────────
+function switchTab(t){state.activeTab=t;render();}
+function handleFile(e){const f=e.target.files[0];if(f&&f.type==='application/pdf'){state.uploadedFile=f;render();}}
+function handleDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf'){state.uploadedFile=f;render();}}
+function updateField(k, v) {
+  const n = parseFloat(v);
+
+  if (v.trim() === '' || isNaN(n)) {
+    delete state.manualFields[k];
+  } else {
+    state.manualFields[k] = n;
+  }
+
+  const filled = Object.keys(state.manualFields).length;
+
+  const countEl = document.getElementById('manual-count');
+  const hintEl  = document.getElementById('manual-hint');
+  const btn     = document.getElementById('manual-analyse-btn');
+
+  if (countEl) {
+    countEl.style.display = filled > 0 ? 'inline-flex' : 'none';
+    countEl.textContent = `✓ ${filled} value${filled === 1 ? '' : 's'} entered`;
+  }
+
+  if (hintEl) {
+    hintEl.style.display = filled > 0 ? 'none' : 'inline';
+  }
+
+  if (btn) {
+    btn.disabled = filled === 0 || state.loading;
+  }
+}
+function newAnalysis(){state.result=null;state.uploadedFile=null;state.manualFields={};state.error=null;navigate('home');}
+
+// ── Render & Init ─────────────────────────────────────────────────────────────
+function render(){
+  renderNav();
+  const c=document.getElementById('content');
+  switch(state.page){
+    case 'home':     c.innerHTML=renderHome();     break;
+    case 'results':  c.innerHTML=renderResults();  break;
+    case 'pipeline': c.innerHTML=renderPipeline(); break;
+    case 'manual':   c.innerHTML=renderManual();   break;
+    case 'about':    c.innerHTML=renderAbout();    break;
+  }
+}
+
+render();
+checkBackend().then(render);
+setInterval(checkBackend, 30000);
+
+// Simulate live latency ticks every 8s when on pipeline page
+setInterval(() => {
+  if (state.page === 'pipeline') {
+    state.liveMetrics.ckdLatency = Math.floor(Math.random()*22+24);
+    state.liveMetrics.thyLatency = Math.floor(Math.random()*18+20);
+    state.liveMetrics.cpuPercent = Math.floor(Math.random()*12+12);
+    const ckdEl = document.getElementById('pm-ckd-lat');
+    const thyEl = document.getElementById('pm-thy-lat');
+    if (ckdEl) ckdEl.textContent = state.liveMetrics.ckdLatency + 'ms';
+    if (thyEl) thyEl.textContent = state.liveMetrics.thyLatency + 'ms';
+  }
+}, 8000);
+</script>
+</body>
+</html>
+
