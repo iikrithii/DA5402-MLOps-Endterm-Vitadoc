@@ -12,6 +12,11 @@ import numpy as np
 import pandas as pd
 import json
 
+import pytest
+
+xgb = pytest.importorskip("xgboost", reason="xgboost not installed — skipping model tests")
+
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
