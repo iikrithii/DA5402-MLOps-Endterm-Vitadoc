@@ -29,6 +29,7 @@ services:
     volumes:
       - ./data:/app/data:ro
       - ./logs:/app/logs
+      - /home/krithishailya/Documents/vitadoc/logs:/app/airflow_logs:ro
     depends_on:
       - mlflow
     restart: unless-stopped

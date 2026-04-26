@@ -794,6 +794,51 @@ def analyse_manual(body: ManualInputRequest):
         log.error("Manual analysis failed: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Analysis error: {e}")
 
+# // ════════════════════════════════════════════════════════
+# //  RUN LOG — reads from backend /pipeline/runs
+
+import os, glob
+from pathlib import Path
+from datetime import datetime, timezone
+
+AIRFLOW_LOGS_DIR = Path("/app/airflow_logs")
+
+@app.get("/pipeline/runs")
+async def pipeline_runs():
+    runs = []
+    if not AIRFLOW_LOGS_DIR.exists():
+        return []
+    for dag_dir in sorted(AIRFLOW_LOGS_DIR.iterdir()):
+        if not dag_dir.is_dir() or not dag_dir.name.startswith("dag_id="):
+            continue
+        dag_id = dag_dir.name.replace("dag_id=", "")
+        run_dirs = sorted([d for d in dag_dir.iterdir() if d.is_dir()], reverse=True)
+        for run_dir in run_dirs[:5]:
+            run_id = run_dir.name.replace("run_id=", "")
+            trigger = "Manual" if "manual__" in run_id else "Scheduled"
+            ts_str = run_id.replace("manual__","").replace("scheduled__","").split("+")[0]
+            try:
+                dt = datetime.fromisoformat(ts_str)
+                start_str = dt.strftime("%Y-%m-%d %H:%M")
+            except:
+                start_str = ts_str[:16]
+            # Check last task's log for success
+            task_dirs = sorted([t for t in run_dir.iterdir() if t.is_dir()])
+            status = "success"
+            for task_dir in task_dirs:
+                log_file = task_dir / "attempt=1.log"
+                if log_file.exists():
+                    content = log_file.read_text(errors="ignore")
+                    if "exited with return code 0" not in content and "Task exited with return code 0" not in content:
+                        status = "failed"
+                        break
+            runs.append({
+                "run": run_id[-8:], "run_id_full": run_id,
+                "dag": dag_id, "status": status,
+                "start": start_str, "dur": "—", "trigger": trigger
+            })
+    runs.sort(key=lambda r: r["start"], reverse=True)
+    return runs[:10]
 
 @app.post("/feedback", tags=["feedback"])
 def submit_feedback(body: FeedbackRequest):

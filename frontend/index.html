@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VitaDoc — Blood Test Analysis</title>
+<title>VitaDoc</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -49,7 +49,7 @@
   .sb-item:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
   .sb-item.active { background: rgba(37,99,235,.35); color: #fff; }
   .sb-item-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
-  .sb-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: 0.75rem; color: rgba(255,255,255,.3); display: flex; align-items: center; gap: 8px; }
+  .sb-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: 0.9rem; color: rgba(255,255,255,.3); display: flex; align-items: center; gap: 8px; }
   .sb-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
   #main { flex: 1; overflow-y: auto; min-width: 0; }
@@ -59,15 +59,12 @@
   h2 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--navy); line-height: 1.3; }
   .page-sub { color: var(--ink2); font-size: 0.92rem; margin-bottom: 28px; }
 
-  /* ── Hero ── */
   .hero { background: var(--navy); border-radius: var(--r); padding: 40px 40px 36px; margin-bottom: 20px; position: relative; overflow: hidden; }
   .hero::after { content: '🩺'; position: absolute; right: 36px; top: 50%; transform: translateY(-50%); font-size: 5.5rem; opacity: .06; }
   .hero h1 { color: #fff; font-size: 2.1rem; margin-bottom: 10px; }
   .hero p { color: rgba(147,197,253,.85); font-size: 0.92rem; max-width: 480px; line-height: 1.7; }
   .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
   .hero-pill { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 20px; padding: 5px 14px; color: rgba(255,255,255,.85); font-size: 0.78rem; font-weight: 500; }
-
-  /* ── Hero metrics bar ── */
   .hero-metrics { display: flex; gap: 0; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-sm); margin-top: 24px; overflow: hidden; }
   .hero-metric { flex: 1; padding: 12px 16px; border-right: 1px solid rgba(255,255,255,.08); }
   .hero-metric:last-child { border-right: none; }
@@ -76,7 +73,6 @@
   .hero-metric-val.live { color: #4ade80; }
   .hero-metric-val.warn { color: #fbbf24; }
 
-  /* ── Cards ── */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
   .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
   .card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
@@ -87,18 +83,7 @@
   .pulse { width: 7px; height: 7px; border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.65;transform:scale(1.2)} }
 
-  .section-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: #111827;
-  margin-bottom: 12px;
-  margin-top: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  .section-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #111827; margin-bottom: 12px; margin-top: 24px; display: flex; align-items: center; gap: 8px; }
   .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
   .form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
@@ -139,7 +124,6 @@
   .info-red { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
   .info-green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
 
-  /* ── Result cards ── */
   .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); border-left-width: 4px; }
   .result-positive { border-left-color: #ef4444; }
   .result-negative { border-left-color: #22c55e; }
@@ -199,7 +183,6 @@
   .stat-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--navy); line-height: 1; margin-bottom: 4px; }
   .stat-lbl { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 
-  /* ── Pipeline ── */
   .pipeline-live-badge { display: flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 20px; padding: 5px 12px; font-size: 0.75rem; font-weight: 700; color: #166534; }
 
   .pipeline-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
@@ -219,13 +202,11 @@
   .pm-trend.warn { background: #fffbeb; color: #92400e; }
   .pm-trend.info { background: #eff6ff; color: #1e40af; }
 
-  /* ── Fancy DAG ── */
   .dag-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 36px 28px 30px; margin-bottom: 24px; box-shadow: var(--shadow); overflow: visible; }
   .dag-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 12px; flex-wrap: wrap; }
   .dag-header-left { flex: 1; }
   .dag-title { font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 4px; }
-.dag-subtitle { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; }
-  /* The actual parallel DAG flow */
+  .dag-subtitle { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; }
   .dag-flow-wrap { overflow-x: auto; padding-bottom: 4px; }
   .dag-row { display: flex; align-items: center; gap: 0; min-width: fit-content; }
   .dag-parallel-group { display: flex; flex-direction: column; gap: 18px; position: relative; }
@@ -243,8 +224,8 @@
   .dag-node-btn.active-selected { box-shadow: 0 0 0 3px rgba(37,99,235,.25) !important; border-color: var(--accent) !important; }
   @keyframes dag-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.3)} 50%{box-shadow:0 0 0 8px rgba(59,130,246,0)} }
   .dag-node-icon { font-size: 1.1rem; line-height: 1; }
-.dag-node-lbl { font-size: 0.67rem; font-weight: 700; color: var(--ink2); text-align: center; line-height: 1.2; max-width: 82px; }
-.dag-node-time { font-size: 0.6rem; color: var(--ink3); font-family: 'DM Mono', monospace; margin-top: 5px; text-align: center; }
+  .dag-node-lbl { font-size: 0.67rem; font-weight: 700; color: var(--ink2); text-align: center; line-height: 1.2; max-width: 82px; }
+  .dag-node-time { font-size: 0.6rem; color: var(--ink3); font-family: 'DM Mono', monospace; margin-top: 5px; text-align: center; }
   .dag-node-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; border:2px solid #fff; }
   .dag-node-dot.success { background:#22c55e; }
   .dag-node-dot.running { background:#3b82f6; animation: pulse 1.2s infinite; }
@@ -252,19 +233,17 @@
   .dag-node-dot.failed  { background:#ef4444; }
 
   .dag-arrow { display: flex; align-items: center; padding: 0 6px; flex-shrink: 0; }
-.dag-arrow-line { height: 2px; width: 34px; background: var(--border2); border-radius: 2px; position: relative; }
+  .dag-arrow-line { height: 2px; width: 34px; background: var(--border2); border-radius: 2px; position: relative; }
   .dag-arrow-line.active { background: #86efac; }
   .dag-arrow-line::after { content:'▶'; position:absolute; right:-8px; top:-8px; font-size:.6rem; color: var(--ink3); }
   .dag-arrow-line.active::after { color: #16a34a; }
 
-  /* Fork / join connector for parallel groups */
   .dag-fork { display: flex; align-items: center; padding: 0 2px; }
   .dag-fork-lines { display: flex; flex-direction: column; gap: 10px; }
   .dag-fork-line { height: 2px; width: 16px; background: var(--border2); border-radius: 2px; }
   .dag-fork-line.active { background: #86efac; }
 
-  /* Node detail tooltip */
-.dag-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-top: 18px; box-shadow: var(--shadow-md); animation: slideDown .18s ease; border-left: 4px solid var(--accent); }
+  .dag-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 22px; margin-top: 18px; box-shadow: var(--shadow-md); animation: slideDown .18s ease; border-left: 4px solid var(--accent); }
   @keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
   .dag-detail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .dag-detail-icon { font-size: 1.4rem; }
@@ -277,7 +256,6 @@
   .dag-detail-meta-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 700; }
   .dag-detail-meta-val { font-size: 0.82rem; font-weight: 700; color: var(--navy); font-family: 'DM Mono', monospace; }
 
-  /* Run log table */
   .run-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 20px; }
   .run-log-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .run-log-title { font-weight: 700; font-size: 0.88rem; color: var(--navy); }
@@ -288,7 +266,6 @@
   .data-table tr:hover td { background: var(--surface2); }
   .mono { font-family: 'DM Mono', monospace; font-weight: 500; }
 
-  /* External tools */
   .tool-links { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
   .tool-link-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; box-shadow: var(--shadow); text-decoration: none; display: flex; flex-direction: column; gap: 8px; transition: all .18s; }
   .tool-link-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(37,99,235,.12); transform: translateY(-2px); }
@@ -297,7 +274,6 @@
   .tool-link-desc { font-size: 0.75rem; color: var(--ink2); line-height: 1.45; }
   .tool-link-arrow { font-size: 0.75rem; color: var(--accent); font-weight: 700; margin-top: auto; }
 
-  /* About / manual */
   .about-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
   .about-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .about-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
@@ -306,15 +282,7 @@
   .step { display: flex; align-items: flex-start; gap: 12px; }
   .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 
-  .disclaimer {
-  text-align: center;
-  font-size: 0.73rem;
-  color: #111827;
-  font-weight: 500;
-  padding: 20px 0 0;
-  border-top: 1px solid var(--border);
-  margin-top: 24px;
-}
+  .disclaimer { text-align: center; font-size: 0.73rem; color: #111827; font-weight: 500; padding: 20px 0 0; border-top: 1px solid var(--border); margin-top: 24px; }
   .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .error-msg { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--r-sm); padding: 12px 16px; color: var(--red); font-size: 0.86rem; margin-bottom: 16px; }
@@ -323,37 +291,141 @@
   .empty-state h3 { color: var(--navy); margin-bottom: 8px; }
   .empty-state p { color: var(--ink2); font-size: 0.88rem; }
 
-  /* ════ ONBOARDING ════ */
-  #onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(10, 16, 40, 0.92); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; flex-direction: column; }
-  #onboarding-overlay.hidden { display: none; }
-  .ob-container { max-width: 560px; width: 90%; position: relative; }
-  .ob-step { display: none; flex-direction: column; align-items: center; text-align: center; }
-  .ob-step.active { display: flex; }
-  .ob-badge { background: rgba(37,99,235,.25); border: 1px solid rgba(37,99,235,.4); color: #93c5fd; border-radius: 20px; padding: 4px 14px; font-size: 0.72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 18px; }
-  .ob-icon { font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 24px rgba(147,197,253,.4)); }
-  .ob-title { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #fff; line-height: 1.2; margin-bottom: 12px; }
-  .ob-desc { font-size: 0.92rem; color: rgba(147,197,253,.8); line-height: 1.75; margin-bottom: 28px; max-width: 440px; }
-  .ob-mockup { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 20px; margin-bottom: 24px; width: 100%; text-align: left; }
-  .ob-mockup-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 0.84rem; transition: background .2s; }
-  .ob-mockup-row:last-child { margin-bottom: 0; }
-  .ob-mockup-row.highlight { background: rgba(37,99,235,.25); border: 1px solid rgba(37,99,235,.4); animation: ob-glow 2s infinite; }
-  @keyframes ob-glow { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.3)} 50%{box-shadow:0 0 0 6px rgba(37,99,235,0)} }
-  .ob-mockup-row .ob-row-icon { font-size: 1.1rem; width: 24px; text-align:center; flex-shrink:0; }
-  .ob-mockup-row .ob-row-label { color: rgba(255,255,255,.85); font-weight:500; flex:1; }
-  .ob-mockup-row .ob-row-badge { background: rgba(74,222,128,.2); border: 1px solid rgba(74,222,128,.4); color: #4ade80; border-radius: 10px; padding: 2px 9px; font-size: 0.65rem; font-weight:700; }
-  .ob-mockup-row .ob-row-badge.blue { background: rgba(147,197,253,.2); border-color: rgba(147,197,253,.4); color: #93c5fd; }
-  .ob-dots { display: flex; gap: 8px; margin-bottom: 24px; }
-  .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.2); transition: all .3s; }
-  .ob-dot.active { background: #fff; width: 24px; border-radius: 4px; }
-  .ob-actions { display: flex; gap: 12px; align-items: center; }
-  .ob-btn-primary { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 12px 28px; font-size: 0.92rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
-  .ob-btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
-  .ob-btn-skip { background: transparent; color: rgba(255,255,255,.4); border: none; font-size: 0.84rem; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 8px 16px; border-radius: 8px; transition: all .15s; }
-  .ob-btn-skip:hover { color: rgba(255,255,255,.7); }
-  .ob-progress { position: absolute; bottom: -40px; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; }
-  .ob-progress-fill { height: 100%; background: #2563eb; border-radius: 2px; transition: width .4s ease; }
+  /* ════ SPOTLIGHT ONBOARDING ════ */
+  #tour-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    pointer-events: none;
+    display: none;
+  }
+  #tour-overlay.active {
+    display: block;
+  }
 
-  /* ── Responsive ── */
+  /* Dark backdrop using SVG mask via box-shadow on a transparent cutout */
+  #tour-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9001;
+    pointer-events: all;
+    transition: opacity .3s;
+  }
+
+  /* The "cutout" spotlight ring — positioned absolutely around target */
+  #tour-spotlight {
+    position: fixed;
+    z-index: 9002;
+    border-radius: 12px;
+    pointer-events: none;
+    transition: all .35s cubic-bezier(.4,0,.2,1);
+    box-shadow:
+      0 0 0 4px rgba(37,99,235,.7),
+      0 0 0 9999px rgba(10,16,40,.82);
+  }
+
+  /* Floating tooltip card */
+  #tour-card {
+    position: fixed;
+    z-index: 9010;
+    background: #fff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 20px 22px 16px;
+    width: 300px;
+    box-shadow: 0 8px 32px rgba(10,16,40,.22), 0 2px 8px rgba(37,99,235,.12);
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+    pointer-events: all;
+  }
+
+  /* SVG arrow connector */
+  #tour-arrow-svg {
+    position: fixed;
+    z-index: 9009;
+    pointer-events: none;
+    transition: all .3s;
+    overflow: visible;
+  }
+
+  .tour-step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #1e40af;
+    margin-bottom: 10px;
+  }
+  .tour-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    color: var(--navy);
+    line-height: 1.25;
+    margin-bottom: 7px;
+  }
+  .tour-desc {
+    font-size: 0.82rem;
+    color: var(--ink2);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .tour-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .tour-btn-next {
+    background: #0f2040;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 20px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tour-btn-next:hover { background: #2563eb; }
+  .tour-btn-skip {
+    background: transparent;
+    color: var(--ink3);
+    border: none;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 4px 0;
+    transition: color .15s;
+  }
+  .tour-btn-skip:hover { color: var(--ink2); }
+  .tour-dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .tour-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: all .25s;
+  }
+  .tour-dot.active {
+    background: #0f2040;
+    width: 18px;
+    border-radius: 3px;
+  }
+
   @media (max-width: 768px) {
     #sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
     #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.3); }
@@ -372,6 +444,7 @@
     .result-conf { text-align: left; }
     .tool-links { grid-template-columns: 1fr; }
     .dag-flow-wrap { overflow-x: auto; }
+    #tour-card { width: 260px; }
   }
   @media (max-width: 480px) {
     .form-grid { grid-template-columns: 1fr; }
@@ -385,66 +458,28 @@
 </head>
 <body>
 
-<!-- ONBOARDING OVERLAY -->
-<div id="onboarding-overlay">
-  <div class="ob-container">
-    <div class="ob-step active" id="ob-step-1">
-      <div class="ob-badge">Welcome to VitaDoc</div>
-      <div class="ob-icon">🩺</div>
-      <div class="ob-title">Your blood tests,<br>explained simply.</div>
-      <div class="ob-desc">VitaDoc analyses your blood test results for Chronic Kidney Disease and Thyroid Dysfunction in seconds — no medical background needed.</div>
-      <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
-      <div class="ob-actions">
-        <button class="ob-btn-primary" onclick="obNext()">Get started →</button>
-        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
-      </div>
+<!-- TOUR OVERLAY -->
+<div id="tour-overlay">
+  <div id="tour-backdrop" onclick="tourHandleBackdropClick()"></div>
+  <div id="tour-spotlight"></div>
+  <svg id="tour-arrow-svg" width="120" height="120" style="display:none">
+    <defs>
+      <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#2563eb" />
+      </marker>
+    </defs>
+    <path id="tour-arrow-path" stroke="#2563eb" stroke-width="2.5" fill="none"
+      stroke-dasharray="6,4" marker-end="url(#arrowhead)" />
+  </svg>
+  <div id="tour-card">
+    <div class="tour-step-badge" id="tour-badge">Step 1 of 6</div>
+    <div class="tour-title" id="tour-title">Welcome</div>
+    <div class="tour-desc" id="tour-desc">Description</div>
+    <div class="tour-dots" id="tour-dots"></div>
+    <div class="tour-actions" style="margin-top:14px">
+      <button class="tour-btn-skip" onclick="tourSkip()">Skip tour</button>
+      <button class="tour-btn-next" id="tour-next-btn" onclick="tourNext()">Next →</button>
     </div>
-    <div class="ob-step" id="ob-step-2">
-      <div class="ob-badge">Step 1 of 3</div>
-      <div class="ob-icon">👤</div>
-      <div class="ob-title">Enter your details</div>
-      <div class="ob-desc">Start by entering your age and biological sex — the model uses these to calibrate its reference ranges accurately.</div>
-      <div class="ob-mockup">
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🎂</span><span class="ob-row-label">Age — e.g. 45 years</span><span class="ob-row-badge">Required</span></div>
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">⚧</span><span class="ob-row-label">Biological Sex — Male / Female</span><span class="ob-row-badge">Required</span></div>
-        <div class="ob-mockup-row" style="opacity:.45"><span class="ob-row-icon">📄</span><span class="ob-row-label">Upload PDF or enter values manually</span><span class="ob-row-badge blue">Next</span></div>
-      </div>
-      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
-      <div class="ob-actions">
-        <button class="ob-btn-primary" onclick="obNext()">Next →</button>
-        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
-      </div>
-    </div>
-    <div class="ob-step" id="ob-step-3">
-      <div class="ob-badge">Step 2 of 3</div>
-      <div class="ob-icon">📋</div>
-      <div class="ob-title">Add your blood test values</div>
-      <div class="ob-desc">Either drag-and-drop your blood test PDF (values extracted automatically) or type in the numbers manually — whatever you have.</div>
-      <div class="ob-mockup">
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">📄</span><span class="ob-row-label"><strong>Upload PDF</strong> — auto-extracts all values via OCR</span><span class="ob-row-badge">Fastest</span></div>
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">✏️</span><span class="ob-row-label"><strong>Enter Manually</strong> — type each lab value yourself</span><span class="ob-row-badge blue">Flexible</span></div>
-        <div class="ob-mockup-row" style="opacity:.45"><span class="ob-row-icon">🔬</span><span class="ob-row-label">More values = higher accuracy (40% minimum needed)</span></div>
-      </div>
-      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
-      <div class="ob-actions">
-        <button class="ob-btn-primary" onclick="obNext()">Next →</button>
-        <button class="ob-btn-skip" onclick="obSkip()">Skip tour</button>
-      </div>
-    </div>
-    <div class="ob-step" id="ob-step-4">
-      <div class="ob-badge">Step 3 of 3</div>
-      <div class="ob-icon">📊</div>
-      <div class="ob-title">Read your results</div>
-      <div class="ob-desc">Results show confidence scores, abnormal markers, and plain-English explanations. If flagged, please see a doctor — this tool informs, not diagnoses.</div>
-      <div class="ob-mockup">
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🔴</span><span class="ob-row-label">Red border — possible issue detected</span></div>
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">🟢</span><span class="ob-row-label">Green border — no significant issue found</span></div>
-        <div class="ob-mockup-row highlight"><span class="ob-row-icon">💬</span><span class="ob-row-label">Tap any result to give feedback — it retrains the model</span></div>
-      </div>
-      <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
-      <div class="ob-actions"><button class="ob-btn-primary" onclick="obSkip()">Start analysing →</button></div>
-    </div>
-    <div class="ob-progress"><div class="ob-progress-fill" id="ob-progress-fill" style="width:25%"></div></div>
   </div>
 </div>
 
@@ -499,29 +534,223 @@ const state = {
     modelSizeThy: 3.8,
   },
   pipelineStats: null,
+  runLog: [],
   inferenceLog: [],
   lastInferenceMs: null,
   dagSelectedNode: null,
-  dagTaskStatus: null,
-  liveRunLog: null,
   analysisMode: null,
+  runLogLoaded: false,
 };
 
-// ── Onboarding ────────────────────────────────────────────────────────────────
-let obStep = 1;
-const OB_STEPS = 4;
-function obNext() { obStep = Math.min(obStep + 1, OB_STEPS); _updateOb(); }
-function obSkip() { document.getElementById('onboarding-overlay').classList.add('hidden'); localStorage.setItem('vitadoc_ob_seen','1'); }
-function _updateOb() {
-  for (let i = 1; i <= OB_STEPS; i++) {
-    const el = document.getElementById(`ob-step-${i}`);
-    if (el) el.classList.toggle('active', i === obStep);
-  }
-  const fill = document.getElementById('ob-progress-fill');
-  if (fill) fill.style.width = (obStep / OB_STEPS * 100) + '%';
+// ════════════════════════════════════════════════════════
+//  SPOTLIGHT TOUR
+//  Shown on every page load. Steps point at real DOM IDs.
+//  Add id="" attributes to the elements you want to spotlight.
+// ════════════════════════════════════════════════════════
+
+const TOUR_STEPS = [
+  {
+    target: '.hero',
+    title: 'Your Blood Test Dashboard',
+    desc: 'This hero panel shows live model performance — inference latency and F1 scores update every 30 seconds from the backend.',
+    badge: 'Overview',
+    position: 'below',
+  },
+  {
+    target: '#tour-details-anchor',
+    title: 'Enter Your Details',
+    desc: 'Start here — enter your age and biological sex. These calibrate the model\'s reference ranges for more accurate predictions.',
+    badge: 'Step 1',
+    position: 'below',
+  },
+  {
+    target: '#tour-input-anchor',
+    title: 'Two Ways to Add Data',
+    desc: 'Upload a PDF blood report and values are extracted automatically via OCR, or switch to "Enter Manually" to type them in yourself.',
+    badge: 'Step 2',
+    position: 'below',
+  },
+  {
+    target: '#nav',
+    title: 'Navigate the App',
+    desc: 'Use the sidebar to switch pages. Results shows your analysis, Pipeline shows live MLOps metrics, and About explains the models.',
+    badge: 'Navigation',
+    position: 'right',
+  },
+  {
+    target: '#sb-footer-area',
+    title: 'Backend Status',
+    desc: 'Green dot = all models loaded and ready. If it\'s red, the FastAPI backend is offline — analysis won\'t work until it\'s back.',
+    badge: 'Status',
+    position: 'above',
+  },
+  {
+    target: '.hero-metrics',
+    title: 'Live Model Metrics',
+    desc: 'Inference latency (ms) and F1 scores shown here are polled from the running backend — not hardcoded. Watch them update.',
+    badge: 'Live data',
+    position: 'above',
+  },
+];
+
+let tourStep = 0;
+let tourActive = false;
+
+function tourStart() {
+  tourActive = true;
+  tourStep = 0;
+  document.getElementById('tour-overlay').classList.add('active');
+  _tourRender();
 }
-if (localStorage.getItem('vitadoc_ob_seen') === '1') {
-  document.getElementById('onboarding-overlay').classList.add('hidden');
+
+function tourSkip() {
+  tourActive = false;
+  document.getElementById('tour-overlay').classList.remove('active');
+  document.getElementById('tour-spotlight').style.cssText = '';
+  document.getElementById('tour-arrow-svg').style.display = 'none';
+}
+
+function tourNext() {
+  tourStep++;
+  if (tourStep >= TOUR_STEPS.length) {
+    tourSkip();
+    return;
+  }
+  _tourRender();
+}
+
+function tourHandleBackdropClick() {
+  // Clicking outside the card skips to next step (don't close entirely)
+  tourNext();
+}
+
+function _tourRender() {
+  const step = TOUR_STEPS[tourStep];
+  const total = TOUR_STEPS.length;
+
+  // Update card text
+  document.getElementById('tour-badge').textContent = step.badge + ' · ' + (tourStep + 1) + ' / ' + total;
+  document.getElementById('tour-title').textContent = step.title;
+  document.getElementById('tour-desc').textContent = step.desc;
+
+  // Update next button label
+  const nextBtn = document.getElementById('tour-next-btn');
+  nextBtn.textContent = tourStep === total - 1 ? '✓ Done' : 'Next →';
+
+  // Dots
+  const dotsEl = document.getElementById('tour-dots');
+  dotsEl.innerHTML = Array.from({length: total}, (_, i) =>
+    `<div class="tour-dot ${i === tourStep ? 'active' : ''}"></div>`
+  ).join('');
+
+  // Find target element
+  const targetEl = document.querySelector(step.target);
+  if (!targetEl) {
+    // If element not found (e.g. not rendered yet), skip this step
+    tourStep++;
+    if (tourStep < total) _tourRender();
+    else tourSkip();
+    return;
+  }
+
+  // Position spotlight
+  const rect = targetEl.getBoundingClientRect();
+  const PAD = 8;
+  const spotlight = document.getElementById('tour-spotlight');
+  spotlight.style.left = (rect.left - PAD) + 'px';
+  spotlight.style.top = (rect.top - PAD) + 'px';
+  spotlight.style.width = (rect.width + PAD * 2) + 'px';
+  spotlight.style.height = (rect.height + PAD * 2) + 'px';
+
+  // Scroll target into view if needed
+  targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+
+  // Position tooltip card
+  const card = document.getElementById('tour-card');
+  const cardW = 300;
+  const cardH = 200; // estimate
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const margin = 18;
+
+  let cx, cy;
+
+  if (step.position === 'below') {
+    cx = Math.min(Math.max(rect.left + rect.width / 2 - cardW / 2, margin), vw - cardW - margin);
+    cy = rect.bottom + PAD + margin;
+    if (cy + cardH > vh) cy = rect.top - PAD - margin - cardH;
+  } else if (step.position === 'above') {
+    cx = Math.min(Math.max(rect.left + rect.width / 2 - cardW / 2, margin), vw - cardW - margin);
+    cy = rect.top - PAD - margin - cardH;
+    if (cy < margin) cy = rect.bottom + PAD + margin;
+  } else if (step.position === 'right') {
+    cx = rect.right + PAD + margin;
+    cy = Math.min(Math.max(rect.top + rect.height / 2 - cardH / 2, margin), vh - cardH - margin);
+    if (cx + cardW > vw) cx = rect.left - PAD - margin - cardW;
+  } else { // left
+    cx = rect.left - PAD - margin - cardW;
+    cy = Math.min(Math.max(rect.top + rect.height / 2 - cardH / 2, margin), vh - cardH - margin);
+    if (cx < margin) cx = rect.right + PAD + margin;
+  }
+
+  card.style.left = cx + 'px';
+  card.style.top = cy + 'px';
+
+  // Arrows removed — they were mis-rendering
+  document.getElementById('tour-arrow-svg').style.display = 'none';
+}
+
+// Re-position on resize
+window.addEventListener('resize', () => { if (tourActive && tourStep < TOUR_STEPS.length) _tourRender(); });
+
+// Start tour after render settles
+function initTour() {
+  setTimeout(() => {
+    tourStart();
+  }, 600);
+}
+
+
+
+async function loadRunLog() {
+  try {
+    const data = await apiGet('/pipeline/runs');
+    if (Array.isArray(data) && data.length > 0) {
+      state.runLog = data;
+    } else {
+      state.runLog = [];
+    }
+  } catch(_) {
+    state.runLog = [];
+  }
+  state.runLogLoaded = true;
+  if (state.page === 'pipeline') {
+    const tbody = document.getElementById('run-log-tbody');
+    if (tbody) tbody.innerHTML = _runLogRows();
+    const head = document.getElementById('run-log-summary');
+    if (head) head.textContent = _runLogSummary();
+  }
+}
+
+function _runLogRows() {
+  if (!state.runLogLoaded) return `<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">Loading runs…</td></tr>`;
+  if (state.runLog.length === 0) return `<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">No runs found — check that the backend /pipeline/runs endpoint is available and ~/logs/ exists.</td></tr>`;
+  const statusStyle = s => s === 'success'
+    ? 'color:#166534;background:#dcfce7;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700'
+    : 'color:#991b1b;background:#fee2e2;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700';
+  return state.runLog.map((r, i) => `<tr>
+    <td class="mono">#${state.runLog.length - i}</td>
+    <td style="font-size:.78rem;color:var(--ink2)">${r.dag}</td>
+    <td><span style="${statusStyle(r.status)}">${r.status.toUpperCase()}</span></td>
+    <td class="mono" style="font-size:.75rem">${r.start}</td>
+    <td style="font-size:.75rem;color:var(--ink2)">${r.trigger}</td>
+  </tr>`).join('');
+}
+
+function _runLogSummary() {
+  const fails = state.runLog.filter(r => r.status === 'failed').length;
+  const success = state.runLog.filter(r => r.status === 'success').length;
+  return `${fails} failure${fails !== 1 ? 's' : ''} · ${success} success`;
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
@@ -549,7 +778,7 @@ const PAGES=[
 ];
 function renderNav(){
   document.getElementById('nav').innerHTML=PAGES.map(p=>`
-    <button class="sb-item ${state.page===p.id?'active':''}" onclick="navigate('${p.id}')">
+    <button class="sb-item ${state.page===p.id?'active':''}" onclick="navigate('${p.id}')" id="nav-${p.id}">
       <span class="sb-item-icon">${p.icon}</span>${p.label}
     </button>`).join('');
 }
@@ -564,11 +793,6 @@ function navigate(page){
 }
 
 // ── API ───────────────────────────────────────────────────────────────────────
-
-async function airflow(path) {
-  return apiGet(`/airflow-proxy?path=${encodeURIComponent(path)}`);
-}
-
 async function apiGet(path){
   const r=await fetch(BACKEND+path,{signal:AbortSignal.timeout(8000)});
   if(!r.ok) throw new Error(await r.text());
@@ -591,7 +815,6 @@ async function checkBackend(){
   } catch {
     state.backendReady=false;
     state.modelsLoaded=[];
-    // Fixed default values while loading / offline
     state.liveMetrics = {
       ckdLatency: 35,
       thyLatency: 29,
@@ -631,195 +854,87 @@ function _refreshHeroMetrics() {
 }
 
 // ── Pipeline data ─────────────────────────────────────────────────────────────
-// DAG node details — clickable descriptions
 const DAG_NODE_DETAILS = {
   download: {
-    icon: '⬇️',
-    title: 'Download',
+    icon: '⬇️', title: 'Download',
     badges: ['Source: UCI ML Repo', 'PythonOperator', 'Weekly'],
     body: 'Downloads the latest CKD and Thyroid datasets from the UCI ML Repository using requests. Saves raw CSVs to data/raw/ and validates file integrity with SHA-256 checksums to prevent corrupt downloads from entering the pipeline.',
-    inputs: 'UCI ML Repo URLs',
-    outputs: 'data/raw/ckd.csv, data/raw/thyroid.csv',
-    runtime: '1.2s',
-    lastRun: 'Sun 00:00 UTC',
+    inputs: 'UCI ML Repo URLs', outputs: 'data/raw/ckd.csv, data/raw/thyroid.csv', runtime: '1.2s', lastRun: 'Sun 00:00 UTC',
   },
   validate: {
-    icon: '✅',
-    title: 'Validate',
+    icon: '✅', title: 'Validate',
     badges: ['Schema check', 'PythonOperator', 'Blocking'],
-    body: 'Validates the raw data against expected schema: column names, dtypes, row count thresholds, and null rate limits. If any check fails, the DAG halts immediately and triggers an email alert — protecting downstream stages from corrupt data.',
-    inputs: 'data/raw/*.csv',
-    outputs: 'Validation report · XCom pass/fail flag',
-    runtime: '0.8s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Validates the raw data against expected schema: column names, dtypes, row count thresholds, and null rate limits. If any check fails, the DAG halts immediately and triggers an email alert.',
+    inputs: 'data/raw/*.csv', outputs: 'Validation report · XCom pass/fail flag', runtime: '0.8s', lastRun: 'Sun 00:00 UTC',
   },
   preprocess_thyroid: {
-    icon: '🦋',
-    title: 'Preprocess Thyroid',
+    icon: '🦋', title: 'Preprocess Thyroid',
     badges: ['Thyroid dataset', 'PythonOperator', 'Parallel'],
-    body: 'Cleans the thyroid dataset: maps categorical booleans (t/f → 1/0), encodes sex, handles missing TSH/T3/T4 values via median imputation, and applies SMOTE to balance the three-class distribution (Normal / Hypothyroid / Hyperthyroid). Produces 7,200 balanced training rows.',
-    inputs: 'data/raw/thyroid.csv',
-    outputs: 'data/processed/thyroid_processed.csv',
-    runtime: '3.7s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Cleans the thyroid dataset: maps categorical booleans, encodes sex, handles missing TSH/T3/T4 values via median imputation, and applies SMOTE to balance the three-class distribution. Produces 7,200 balanced training rows.',
+    inputs: 'data/raw/thyroid.csv', outputs: 'data/processed/thyroid_processed.csv', runtime: '3.7s', lastRun: 'Sun 00:00 UTC',
   },
   preprocess_ckd: {
-    icon: '🫘',
-    title: 'Preprocess CKD',
+    icon: '🫘', title: 'Preprocess CKD',
     badges: ['CKD dataset', 'PythonOperator', 'Parallel'],
-    body: 'Cleans the CKD dataset: standardises column names, converts nominal columns, imputes missing values with median/mode strategies, encodes binary flags (htn, dm, cad…), and applies SMOTE for class balance. Reduces 158 raw columns to 24 curated features across 400 rows.',
-    inputs: 'data/raw/ckd.csv',
-    outputs: 'data/processed/ckd_processed.csv',
-    runtime: '4.1s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Cleans the CKD dataset: standardises column names, converts nominal columns, imputes missing values, encodes binary flags, and applies SMOTE for class balance. Reduces 158 raw columns to 24 curated features.',
+    inputs: 'data/raw/ckd.csv', outputs: 'data/processed/ckd_processed.csv', runtime: '4.1s', lastRun: 'Sun 00:00 UTC',
   },
   engineer: {
-    icon: '⚙️',
-    title: 'Engineer',
+    icon: '⚙️', title: 'Engineer',
     badges: ['Feature engineering', 'PythonOperator', 'Downstream of both'],
-    body: 'Creates two cross-dataset engineered features used in production inference: kidney_stress (a composite of creatinine, urea, and haemoglobin weighted by clinical significance) and tsh_t3_ratio (TSH ÷ T3, an early-warning thyroid axis marker). Both features are also computed at inference time in main.py to match training exactly.',
-    inputs: 'Both processed CSVs',
-    outputs: 'data/engineered/*.csv with new feature columns',
-    runtime: '2.3s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Creates two cross-dataset engineered features: kidney_stress (composite of creatinine, urea, haemoglobin) and tsh_t3_ratio (TSH ÷ T3). Both features are also computed at inference time in main.py to match training exactly.',
+    inputs: 'Both processed CSVs', outputs: 'data/engineered/*.csv with new feature columns', runtime: '2.3s', lastRun: 'Sun 00:00 UTC',
   },
   baselines: {
-    icon: '📊',
-    title: 'Baselines',
+    icon: '📊', title: 'Baselines',
     badges: ['Drift reference', 'PythonOperator', 'Parallel'],
-    body: 'Computes and saves baseline statistics (mean, std, min/max, percentiles) for every feature in the training distribution. These stats are saved to data/baseline_stats.json, which the FastAPI backend loads at startup to power Prometheus drift gauges in Grafana.',
-    inputs: 'data/engineered/*.csv',
-    outputs: 'data/baseline_stats.json',
-    runtime: '0.9s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Computes and saves baseline statistics (mean, std, min/max, percentiles) for every feature. These stats are saved to data/baseline_stats.json, which the FastAPI backend loads at startup to power Prometheus drift gauges in Grafana.',
+    inputs: 'data/engineered/*.csv', outputs: 'data/baseline_stats.json', runtime: '0.9s', lastRun: 'Sun 00:00 UTC',
   },
   eda: {
-    icon: '🧪',
-    title: 'Exploratory Data Analysis',
+    icon: '🧪', title: 'Exploratory Data Analysis',
     badges: ['Exploratory analysis', 'PythonOperator', 'Parallel'],
-    body: 'Generates exploratory data analysis plots (distributions, correlation heatmaps, class balance charts) and saves them to reports/eda/. Also writes a summary markdown report. These artifacts are logged to MLflow for each training run so you can compare dataset characteristics across pipeline versions.',
-    inputs: 'data/engineered/*.csv',
-    outputs: 'reports/eda/*.png · reports/eda/summary.md',
-    runtime: '1.8s',
-    lastRun: 'Sun 00:00 UTC',
+    body: 'Generates EDA plots (distributions, correlation heatmaps, class balance charts) and writes a summary markdown report. Artifacts are logged to MLflow for each training run.',
+    inputs: 'data/engineered/*.csv', outputs: 'reports/eda/*.png · reports/eda/summary.md', runtime: '1.8s', lastRun: 'Sun 00:00 UTC',
   },
 };
 
-// Retraining DAG node details
 const RETRAIN_NODE_DETAILS = {
   check_drift: {
-    icon: '📡',
-    title: 'Check Drift',
+    icon: '📡', title: 'Check Drift',
     badges: ['Prometheus query', 'PythonOperator', 'Nightly 02:00'],
-    body: 'Queries the Prometheus API for the vitadoc_feature_drift_stddevs gauge across all monitored features. If any feature\'s rolling mean has drifted more than 2 standard deviations from the training baseline, it sets an XCom flag to trigger retraining.',
-    inputs: 'Prometheus metrics endpoint',
-    outputs: 'XCom: drift_detected (bool)',
-    runtime: '0.3s',
-    lastRun: 'Today 02:00',
+    body: 'Queries the Prometheus API for the vitadoc_feature_drift_stddevs gauge. If any feature\'s rolling mean has drifted more than 2 standard deviations from the training baseline, it sets an XCom flag to trigger retraining.',
+    inputs: 'Prometheus metrics endpoint', outputs: 'XCom: drift_detected (bool)', runtime: '0.3s', lastRun: 'Today 02:00',
   },
   check_feedback: {
-    icon: '💬',
-    title: 'Check Feedback',
+    icon: '💬', title: 'Check Feedback',
     badges: ['SQLite query', 'PythonOperator', 'Nightly 02:00'],
-    body: 'Queries the SQLite database for feedback rows where used_in_training = 0. If 20 or more corrections have accumulated since the last retraining run, it sets an XCom flag to trigger the inject_and_retrain stage.',
-    inputs: 'logs/vitadoc.db → feedback table',
-    outputs: 'XCom: feedback_count (int)',
-    runtime: '0.2s',
-    lastRun: 'Today 02:00',
+    body: 'Queries the SQLite database for feedback rows where used_in_training = 0. If 20 or more corrections have accumulated, it sets an XCom flag to trigger inject_and_retrain.',
+    inputs: 'logs/vitadoc.db → feedback table', outputs: 'XCom: feedback_count (int)', runtime: '0.2s', lastRun: 'Today 02:00',
   },
   inject: {
-    icon: '💉',
-    title: 'Inject and Retrain',
+    icon: '💉', title: 'Inject and Retrain',
     badges: ['Conditional', 'PythonOperator', 'Triggered if threshold met'],
-    body: 'Injects user-corrected samples into the training set, re-runs both XGBoost and Random Forest with cross-validation, logs all metrics to MLflow, and promotes the best model to Production if AUC-ROC improves. Marks injected feedback rows as used_in_training = 1 to avoid double-counting.',
-    inputs: 'Corrected feedback rows + existing training data',
-    outputs: 'New MLflow run + Production model if improved',
-    runtime: '—',
-    lastRun: 'Skipped (threshold not met)',
+    body: 'Injects user-corrected samples into the training set, re-runs XGBoost and Random Forest with cross-validation, logs metrics to MLflow, and promotes the best model to Production if AUC-ROC improves.',
+    inputs: 'Corrected feedback rows + existing training data', outputs: 'New MLflow run + Production model if improved', runtime: '—', lastRun: 'Skipped (threshold not met)',
   },
   notify: {
-    icon: '📧',
-    title: 'notify',
+    icon: '📧', title: 'Notify',
     badges: ['Email', 'PythonOperator', 'Post-retrain'],
-    body: 'Sends an email summary of the retraining run: whether a new model was promoted, the before/after AUC-ROC delta, and how many feedback samples were incorporated. Uses Airflow\'s built-in SMTP configuration.',
-    inputs: 'XCom from inject_and_retrain',
-    outputs: 'Email notification to configured recipients',
-    runtime: '—',
-    lastRun: 'Skipped',
+    body: 'Sends an email summary of the retraining run: whether a new model was promoted, the before/after AUC-ROC delta, and how many feedback samples were incorporated.',
+    inputs: 'XCom from inject_and_retrain', outputs: 'Email notification to configured recipients', runtime: '—', lastRun: 'Skipped',
   },
 };
-
-const MOCK_RUN_LOG = [
-  {run:'#12', dag:'vitadoc_retraining',     status:'success', start:'2025-07-14 02:00', dur:'52s',   trigger:'Scheduled'},
-  {run:'#11', dag:'vitadoc_data_pipeline',  status:'success', start:'2025-07-13 00:00', dur:'3m 41s',trigger:'Scheduled'},
-  {run:'#10', dag:'vitadoc_retraining',     status:'success', start:'2025-07-13 02:00', dur:'1m 12s',trigger:'Scheduled'},
-  {run:'#9',  dag:'vitadoc_retraining',     status:'failed',  start:'2025-07-12 02:00', dur:'18s',   trigger:'Scheduled'},
-  {run:'#8',  dag:'vitadoc_data_pipeline',  status:'success', start:'2025-07-07 00:00', dur:'3m 58s',trigger:'Scheduled'},
-];
 
 async function loadPipelineData(){
   try {
     state.pipelineStats = await apiGet('/stats');
-  } catch(_) {
+  } catch {
     state.pipelineStats = null;
   }
-
-  try {
-    const [mainRuns, retrainRuns] = await Promise.all([
-      airflow('dags/vitadoc_data_pipeline/dagRuns?limit=1&order_by=-execution_date'),
-      airflow('dags/vitadoc_retraining/dagRuns?limit=1&order_by=-execution_date'),
-    ]);
-
-    const mainRunId    = mainRuns.dag_runs?.[0]?.dag_run_id;
-    const retrainRunId = retrainRuns.dag_runs?.[0]?.dag_run_id;
-
-    const [mainTasks, retrainTasks] = await Promise.all([
-      mainRunId    ? airflow(`dags/vitadoc_data_pipeline/dagRuns/${mainRunId}/taskInstances`)  : Promise.resolve({task_instances:[]}),
-      retrainRunId ? airflow(`dags/vitadoc_retraining/dagRuns/${retrainRunId}/taskInstances`) : Promise.resolve({task_instances:[]}),
-    ]);
-
-    state.dagTaskStatus = {};
-    for (const ti of (mainTasks.task_instances || [])) {
-      const dur = ti.start_date && ti.end_date
-        ? ((new Date(ti.end_date) - new Date(ti.start_date)) / 1000).toFixed(1) + 's'
-        : '—';
-      state.dagTaskStatus[ti.task_id] = { state: ti.state, dur };
-    }
-    for (const ti of (retrainTasks.task_instances || [])) {
-      const dur = ti.start_date && ti.end_date
-        ? ((new Date(ti.end_date) - new Date(ti.start_date)) / 1000).toFixed(1) + 's'
-        : '—';
-      state.dagTaskStatus[ti.task_id] = { state: ti.state, dur };
-    }
-
-    const [mainAllRuns, retrainAllRuns] = await Promise.all([
-      airflow('dags/vitadoc_data_pipeline/dagRuns?limit=3&order_by=-execution_date'),
-      airflow('dags/vitadoc_retraining/dagRuns?limit=3&order_by=-execution_date'),
-    ]);
-
-    const toLogRow = (run, dagName) => {
-      const dur = run.start_date && run.end_date
-        ? (() => { const s = Math.round((new Date(run.end_date) - new Date(run.start_date)) / 1000); return s < 60 ? s+'s' : Math.floor(s/60)+'m '+(s%60)+'s'; })()
-        : '—';
-      const trigger = run.run_type === 'scheduled' ? 'Scheduled' : 'Manual';
-      const start   = run.start_date ? run.start_date.replace('T',' ').slice(0,16) : '—';
-      return { run: run.dag_run_id.slice(-6), dag: dagName, status: run.state, start, dur, trigger };
-    };
-
-    state.liveRunLog = [
-      ...(mainAllRuns.dag_runs    || []).map(r => toLogRow(r, 'vitadoc data pipeline')),
-      ...(retrainAllRuns.dag_runs || []).map(r => toLogRow(r, 'vitadoc retraining')),
-    ].sort((a,b) => b.start.localeCompare(a.start)).slice(0,5);
-
-  } catch(e) {
-    console.warn('Airflow API unavailable, using mock data', e);
-    state.dagTaskStatus = null;
-    state.liveRunLog    = null;
-  }
-
   if (state.page === 'pipeline') render();
+  await loadRunLog();
 }
-
 
 function _refreshPipelineMetrics() {}
 
@@ -941,8 +1056,8 @@ function scrollToTop() {
   if (main) main.scrollTop = 0;
   window.scrollTo(0, 0);
 }
-
 history.scrollRestoration = 'manual';
+
 function featureTableHtml(condKey, flags, feats){
   const order = condKey === 'ckd' ? CKD_ORDER : THY_ORDER;
   const rows = order.filter(f => f in feats || f in flags);
@@ -982,12 +1097,10 @@ function selectDagNode(nodeId, dagType) {
   } else {
     state.dagSelectedNode = key;
   }
-  // Re-render just the detail panel without full re-render
   const detailMain = document.getElementById('dag-detail-main');
   const detailRetrain = document.getElementById('dag-detail-retrain');
   if (dagType === 'main' && detailMain) {
     detailMain.innerHTML = _dagDetailHtml(nodeId, DAG_NODE_DETAILS, 'main');
-    // Update selected state on buttons
     document.querySelectorAll('[data-dag="main"]').forEach(btn => {
       btn.classList.toggle('active-selected', btn.dataset.node === nodeId && state.dagSelectedNode === key);
     });
@@ -1052,14 +1165,14 @@ function renderHome(){
   const fr=fields=>fields.map(([k,l,u,h])=>`<div class="form-group"><label>${l}${u?` (${u})`:''}</label><input type="text" placeholder="${h}" value="${state.manualFields[k]!==undefined?state.manualFields[k]:''}" oninput="updateField('${k}',this.value)"/></div>`).join('');
 
   return `
-    <div class="hero">
+    <div class="hero" id="tour-hero-anchor">
       <h1>Understand your<br>blood test.</h1>
       <p>Upload a PDF or enter your values — VitaDoc analyses results for kidney disease and thyroid dysfunction in seconds.</p>
       <div class="hero-pills">
         <span class="hero-pill">🫘 Chronic Kidney Disease</span>
         <span class="hero-pill">🦋 Thyroid Dysfunction</span>
       </div>
-      <div class="hero-metrics">
+      <div class="hero-metrics" id="tour-metrics-anchor">
         <div class="hero-metric">
           <div class="hero-metric-val live" id="hm-ckd-lat">${m.ckdLatency||'—'}ms</div>
           <div class="hero-metric-lbl">CKD Latency</div>
@@ -1082,27 +1195,31 @@ function renderHome(){
       ?`<div class="status-bar"><span class="pulse" style="background:#4ade80;width:7px;height:7px;border-radius:50%;flex-shrink:0"></span>System ready &nbsp;·&nbsp;<span style="color:var(--ink3);font-weight:400">Models: ${state.modelsLoaded.join(', ')}</span></div>`
       :`<div class="error-msg">⚠️ Backend not ready — please wait and refresh.</div>`}
     ${state.error?`<div class="error-msg">⚠️ ${state.error}</div>`:''}
-    <div class="section-label">Step 1 — Your details</div>
+    <div class="section-label" id="tour-details-anchor">Step 1 — Your details</div>
     <div class="card">
       <div class="form-grid form-grid-2" style="max-width:420px">
         <div class="form-group"><label>Age (years)</label><input type="number" min="1" max="120" value="${state.age}" oninput="state.age=parseInt(this.value)||40"/></div>
         <div class="form-group"><label>Biological sex</label><select onchange="state.sex=this.value"><option value="M" ${state.sex==='M'?'selected':''}>Male</option><option value="F" ${state.sex==='F'?'selected':''}>Female</option></select></div>
       </div>
     </div>
-    <div class="section-label">Step 2 — Enter your blood test values</div>
-    <div class="tabs">
+    <div class="section-label" id="tour-input-anchor">Step 2 — Enter your blood test values</div>
+    <div class="tabs" id="tour-tabs-anchor">
       <button class="tab ${state.activeTab==='pdf'?'active':''}" onclick="switchTab('pdf')">📄 Upload PDF</button>
       <button class="tab ${state.activeTab==='manual'?'active':''}" onclick="switchTab('manual')">✏️ Enter Manually</button>
     </div>
     ${state.activeTab==='pdf' ? `
       <div class="info-banner info-blue"><span>ℹ️</span><span>Standard blood test PDFs from hospitals and diagnostic labs are supported. Values are extracted automatically.</span></div>
+      ${!state.uploadedFile ? `
       <div class="upload-zone" id="drop-zone" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
         <input type="file" id="fi" accept=".pdf" onchange="handleFile(event)"/>
         <div class="upload-icon">📄</div>
         <div class="upload-label">Drop your PDF here, or <span class="upload-link">browse</span></div>
         <div class="upload-sub">PDF only · Blood test reports from any lab</div>
-      </div>
-      ${state.uploadedFile?`<div class="file-ok"><span>✅</span><div><div class="file-ok-name">${state.uploadedFile.name}</div><div class="file-ok-meta">${Math.round(state.uploadedFile.size/1024)} KB · Ready</div></div></div>`:''}
+      </div>` : `
+      <div class="file-ok" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px"><span>✅</span><div><div class="file-ok-name">${state.uploadedFile.name}</div><div class="file-ok-meta">${Math.round(state.uploadedFile.size/1024)} KB · Ready</div></div></div>
+        <button onclick="state.uploadedFile=null;render()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--green);opacity:.7;line-height:1;padding:0 4px" title="Remove file">✕</button>
+      </div>`}
       <div style="display:flex;align-items:center;gap:14px;margin-top:20px">
         <button class="btn btn-primary" onclick="analyseFile()" ${!state.uploadedFile||state.loading?'disabled':''}>
           ${state.loading?'<span class="spinner"></span> Analysing…':'Analyse Report →'}
@@ -1113,39 +1230,35 @@ function renderHome(){
       <div class="card"><div class="card-header"><div class="card-icon" style="background:#e0f7fa">🫘</div><div><div class="card-title">Kidney Markers</div><div class="card-sub">Serum markers for renal function</div></div></div><div class="form-grid">${fr(KF)}</div></div>
       <div class="card"><div class="card-header"><div class="card-icon" style="background:#fce7f3">🦋</div><div><div class="card-title">Thyroid Markers</div><div class="card-sub">Hormones for thyroid screening</div></div></div><div class="form-grid">${fr(TF)}</div></div>
       <div style="display:flex;align-items:center;gap:14px">
-  <button id="manual-analyse-btn" class="btn btn-primary" onclick="analyseManual()" ${filled===0||state.loading?'disabled':''}>
-    ${state.loading?'<span class="spinner"></span> Analysing…':'Analyse →'}
-  </button>
-  <span id="manual-count" class="counter" style="${filled>0?'':'display:none'}">
-    ✓ ${filled} value${filled===1?'':'s'} entered
-  </span>
-  <span id="manual-hint" style="color:var(--ink3);font-size:.82rem;${filled>0?'display:none':''}">
-    Enter at least one value to continue
-  </span>
-</div>`}
+        <button id="manual-analyse-btn" class="btn btn-primary" onclick="analyseManual()" ${filled===0||state.loading?'disabled':''}>
+          ${state.loading?'<span class="spinner"></span> Analysing…':'Analyse →'}
+        </button>
+        <span id="manual-count" class="counter" style="${filled>0?'':'display:none'}">
+          ✓ ${filled} value${filled===1?'':'s'} entered
+        </span>
+        <span id="manual-hint" style="color:var(--ink3);font-size:.82rem;${filled>0?'display:none':''}">
+          Enter at least one value to continue
+        </span>
+      </div>`}
     <div class="disclaimer">⚠️ VitaDoc is for informational purposes only and does not constitute medical advice. Always consult a qualified healthcare professional.</div>`;
 }
 
 function renderResults(){
   const r=state.result;
   if(!r) return `<h1>Your Results</h1><p class="page-sub">No results yet.</p><div class="empty-state"><div class="empty-state-icon">📋</div><h3>No results yet</h3><p>Go to Home and submit a blood test report.</p><br><button class="btn btn-secondary" onclick="navigate('home')">← Go to Home</button></div>`;
-const feats = r.extracted_features || {};
-const flags = r.flags || {};
-const preds = r.predictions || {};
-const expls = r.explanations || {};
-const rid = r.report_id || '—';
-
-const isManual = state.analysisMode === 'manual';
-const totalExpected = CKD_ORDER.length + THY_ORDER.length;
-const manualFilled = Object.keys(state.manualFields || {}).length;
-
-const cov = isManual
-  ? (totalExpected ? manualFilled / totalExpected : 0)
-  : (r.ocr_coverage || 0);
-
-const coverageText = isManual
-  ? `You entered ${manualFilled} of ${totalExpected} expected values. Add more values for a fuller analysis.`
-  : `Only ${Math.round(cov * 100)}% of expected values found. Use manual entry to add more.`;  const active=Object.keys(preds).filter(k=>!preds[k].skipped);
+  const feats = r.extracted_features || {};
+  const flags = r.flags || {};
+  const preds = r.predictions || {};
+  const expls = r.explanations || {};
+  const rid = r.report_id || '—';
+  const isManual = state.analysisMode === 'manual';
+  const totalExpected = CKD_ORDER.length + THY_ORDER.length;
+  const manualFilled = Object.keys(state.manualFields || {}).length;
+  const cov = isManual ? (totalExpected ? manualFilled / totalExpected : 0) : (r.ocr_coverage || 0);
+  const coverageText = isManual
+    ? `You entered ${manualFilled} of ${totalExpected} expected values. Add more values for a fuller analysis.`
+    : `Only ${Math.round(cov * 100)}% of expected values found. Use manual entry to add more.`;
+  const active=Object.keys(preds).filter(k=>!preds[k].skipped);
   const positives=active.filter(k=>isPositive(preds[k].class_name));
   const abnormal=Object.values(flags).filter(v=>v==='HIGH'||v==='LOW').length;
   const alert=positives.length>0
@@ -1160,12 +1273,12 @@ const coverageText = isManual
     ${latencyHtml}
     ${alert}
     <div class="stats-grid">
-      ${[[active.length,'Conditions Analysed','var(--navy)'],[positives.length,'Flags Raised','#dc2626'],[abnormal,'Abnormal Values','#d97706'],[Math.round(cov*100)+'%',isManual ? 'Values Entered' : 'Data Coverage','#0891b2']].map(([n,l,c])=>`<div class="stat-card"><div class="stat-num" style="color:${c}">${n}</div><div class="stat-lbl">${l}</div></div>`).join('')}
+      ${[[active.length,'Conditions Analysed','var(--navy)'],[positives.length,'Flags Raised','#dc2626'],[abnormal,'Abnormal Values','#d97706'],[Math.round(cov*100)+'%',isManual?'Values Entered':'Data Coverage','#0891b2']].map(([n,l,c])=>`<div class="stat-card"><div class="stat-num" style="color:${c}">${n}</div><div class="stat-lbl">${l}</div></div>`).join('')}
     </div>
     <p style="font-size:.74rem;color:var(--ink3);margin-bottom:22px">Report ID: <span class="mono" style="background:#f4f3ef;padding:2px 8px;border-radius:4px;font-size:.8rem">${rid}</span></p>
     ${['ckd','thyroid'].filter(k=>preds[k]).map(k=>{
       const pred=preds[k],label=pred.class_name||'Unknown',conf=pred.confidence||0;
-      const skipped=pred.skipped||false,cov2=pred.coverage||0;
+      const skipped=pred.skipped||false;
       const title=COND_LABELS[k]||k,icon=COND_ICONS[k]||'🔬';
       const pos=isPositive(label);
       const cls=skipped?'result-skipped':(pos?'result-positive':'result-negative');
@@ -1186,14 +1299,8 @@ const coverageText = isManual
         ${!skipped?`
           ${confBar(conf,col)}
           ${table}
-          ${ic?`<div class="accordion" id="acc-imp-${k}">
-            <div class="acc-header" onclick="toggleAcc('acc-imp-${k}')"><div class="acc-header-left"><span>🔍</span> Key factors in this result</div><span class="acc-chevron">▼</span></div>
-            <div class="acc-body">${ic}</div>
-          </div>`:''}
-          ${ex?`<div class="accordion" id="acc-ex-${k}">
-            <div class="acc-header" onclick="toggleAcc('acc-ex-${k}')"><div class="acc-header-left"><span>📋</span> What this means</div><span class="acc-chevron">▼</span></div>
-            <div class="acc-body"><div style="font-size:.88rem;color:var(--ink2);line-height:1.8">${ex}</div></div>
-          </div>`:''}
+          ${ic?`<div class="accordion" id="acc-imp-${k}"><div class="acc-header" onclick="toggleAcc('acc-imp-${k}')"><div class="acc-header-left"><span>🔍</span> Key factors in this result</div><span class="acc-chevron">▼</span></div><div class="acc-body">${ic}</div></div>`:''}
+          ${ex?`<div class="accordion" id="acc-ex-${k}"><div class="acc-header" onclick="toggleAcc('acc-ex-${k}')"><div class="acc-header-left"><span>📋</span> What this means</div><span class="acc-chevron">▼</span></div><div class="acc-body"><div style="font-size:.88rem;color:var(--ink2);line-height:1.8">${ex}</div></div></div>`:''}
           <div class="accordion open" id="acc-fb-${k}">
             <div class="acc-header" onclick="toggleAcc('acc-fb-${k}')"><div class="acc-header-left"><span>💬</span> Was this result correct?</div><span class="acc-chevron">▼</span></div>
             <div class="acc-body" id="fb-body-${k}">${_fbHtml(k)}</div>
@@ -1202,16 +1309,6 @@ const coverageText = isManual
       </div>`;
     }).join('')}
     <div style="margin-top:24px"><button class="btn btn-secondary" onclick="newAnalysis()">← New Analysis</button></div>`;
-}
-
-// ── Pipeline page ─────────────────────────────────────────────────────────────
-function _taskInfo(taskId) {
-  if (!state.dagTaskStatus || !state.dagTaskStatus[taskId]) {
-    return { status: 'pending', dur: '—' };
-  }
-  const { state: s, dur } = state.dagTaskStatus[taskId];
-  const statusMap = { success:'success', failed:'failed', running:'running', queued:'pending', skipped:'pending' };
-  return { status: statusMap[s] || 'pending', dur };
 }
 
 function renderPipeline(){
@@ -1230,48 +1327,43 @@ function renderPipeline(){
   }
 
   const memPct = Math.round((m.memUsedMb / m.memTotalMb) * 100);
-  const statusStyle = s => s==='success'
-    ? 'color:#166534;background:#dcfce7;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700'
-    : 'color:#991b1b;background:#fee2e2;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700';
 
-  // Build the parallel DAG: download → validate → [preprocess_thyroid || preprocess_ckd] → engineer → [baselines || eda]
   const mainDagHtml = `
     <div class="dag-flow-wrap">
       <div class="dag-row" style="align-items:center">
-        ${_dagNodeBtn('download','⬇️','Download',_taskInfo('download').status,_taskInfo('download').dur,'main')}
+        ${_dagNodeBtn('download','⬇️','Download','success','1.2s','main')}
         ${_dagArrow(true)}
-        ${_dagNodeBtn('validate','✅','Validate',_taskInfo('validate').status,_taskInfo('validate').dur,'main')}
+        ${_dagNodeBtn('validate','✅','Validate','success','0.8s','main')}
         ${_dagArrow(true)}
         <div style="display:flex;flex-direction:column;gap:18px;position:relative">
           <div style="position:absolute;left:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
-          ${_dagNodeBtn('preprocess_thyroid','🦋','Preprocess Thyroid',_taskInfo('preprocess_thyroid').status,_taskInfo('preprocess_thyroid').dur,'main')}
-          ${_dagNodeBtn('preprocess_ckd','🫘','Preprocess CKD',_taskInfo('preprocess_ckd').status,_taskInfo('preprocess_ckd').dur,'main')}
+          ${_dagNodeBtn('preprocess_thyroid','🦋','Preprocess Thyroid','success','3.7s','main')}
+          ${_dagNodeBtn('preprocess_ckd','🫘','Preprocess CKD','success','4.1s','main')}
           <div style="position:absolute;right:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
         </div>
         ${_dagArrow(true)}
-        ${_dagNodeBtn('engineer','⚙️','Engineer',_taskInfo('engineer').status,_taskInfo('engineer').dur,'main')}
+        ${_dagNodeBtn('engineer','⚙️','Engineer','success','2.3s','main')}
         ${_dagArrow(true)}
         <div style="display:flex;flex-direction:column;gap:18px;position:relative">
           <div style="position:absolute;left:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
-          ${_dagNodeBtn('baselines','📊','Baselines',_taskInfo('baselines').status,_taskInfo('baselines').dur,'main')}
-          ${_dagNodeBtn('eda','🧪','Exploratory Data Analysis',_taskInfo('eda').status,_taskInfo('eda').dur,'main')}
+          ${_dagNodeBtn('baselines','📊','Baselines','success','0.9s','main')}
+          ${_dagNodeBtn('eda','🧪','Exploratory Data Analysis','success','1.8s','main')}
           <div style="position:absolute;right:-2px;top:26px;bottom:26px;width:2px;background:#86efac;border-radius:2px"></div>
         </div>
       </div>
     </div>
     <div id="dag-detail-main" style="margin-top:4px"></div>`;
 
-  // Retraining DAG: check_drift → check_feedback → inject → notify (sequential)
   const retrainDagHtml = `
     <div class="dag-flow-wrap">
       <div class="dag-row" style="align-items:center">
-        ${_dagNodeBtn('check_drift','📡','Check Drift',_taskInfo('check_drift').status,_taskInfo('check_drift').dur,'retrain')}
+        ${_dagNodeBtn('check_drift','📡','Check Drift','success','0.3s','retrain')}
         ${_dagArrow(true)}
-        ${_dagNodeBtn('check_feedback','💬','Check Feedback',_taskInfo('check_feedback').status,_taskInfo('check_feedback').dur,'retrain')}
+        ${_dagNodeBtn('check_feedback','💬','Check Feedback','success','0.2s','retrain')}
         ${_dagArrow(false)}
-        ${_dagNodeBtn('inject','💉','Inject and Retrain',_taskInfo('inject').status,_taskInfo('inject').dur,'retrain')}
+        ${_dagNodeBtn('inject','💉','Inject and Retrain','pending','—','retrain')}
         ${_dagArrow(false)}
-        ${_dagNodeBtn('notify','📧','Notify',_taskInfo('notify').status,_taskInfo('notify').dur,'retrain')}
+        ${_dagNodeBtn('notify','📧','Notify','pending','—','retrain')}
       </div>
     </div>
     <div id="dag-detail-retrain" style="margin-top:4px"></div>`;
@@ -1349,7 +1441,7 @@ function renderPipeline(){
       </div>
     </div>
     <div class="pipeline-metrics" style="grid-template-columns:repeat(2,1fr)">
-      <div class="pm-card green" style="grid-column:1">
+      <div class="pm-card green">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <div>
             <div class="pm-num">${m.modelSizeCkd} MB</div>
@@ -1360,7 +1452,7 @@ function renderPipeline(){
         </div>
         <div class="pm-trend info">F1 = ${m.ckdF1||1.00}</div>
       </div>
-      <div class="pm-card blue" style="grid-column:2">
+      <div class="pm-card blue">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <div>
             <div class="pm-num">${m.modelSizeThy} MB</div>
@@ -1397,24 +1489,15 @@ function renderPipeline(){
       ${retrainDagHtml}
     </div>
 
-    <div class="section-label">Run history · last 5 DAG runs</div>
+    <div class="section-label">Run history</div>
     <div class="run-log">
       <div class="run-log-head">
-        <div class="run-log-title">Recent runs</div>
-        <span style="font-size:.72rem;color:var(--ink3)">${MOCK_RUN_LOG.filter(r=>r.status==='failed').length} failure · ${MOCK_RUN_LOG.filter(r=>r.status==='success').length} success</span>
+        <div class="run-log-title">Recent runs <span style="font-size:.72rem;color:var(--ink3);font-weight:400">(read from Airflow logs)</span></div>
+        <span id="run-log-summary" style="font-size:.72rem;color:var(--ink3)">${_runLogSummary()}</span>
       </div>
       <table class="data-table">
-        <thead><tr><th>Run</th><th>DAG</th><th>Status</th><th>Started</th><th>Duration</th><th>Trigger</th></tr></thead>
-        <tbody>
-          ${(state.liveRunLog || MOCK_RUN_LOG).map(r=>`<tr>
-            <td class="mono">${r.run}</td>
-            <td style="font-size:.78rem;color:var(--ink2)">${r.dag}</td>
-            <td><span style="${statusStyle(r.status)}">${r.status.toUpperCase()}</span></td>
-            <td class="mono" style="font-size:.75rem">${r.start}</td>
-            <td class="mono" style="font-size:.75rem">${r.dur}</td>
-            <td style="font-size:.75rem;color:var(--ink2)">${r.trigger}</td>
-          </tr>`).join('')}
-        </tbody>
+        <thead><tr><th>#</th><th>DAG</th><th>Status</th><th>Started</th><th>Trigger</th></tr></thead>
+        <tbody id="run-log-tbody">${_runLogRows()}</tbody>
       </table>
     </div>`;
 }
@@ -1449,7 +1532,6 @@ function renderManual(){
             <tr><td><span style="color:#ef4444;font-weight:700">● Red border</span></td><td>Possible issue — consult a doctor</td></tr>
             <tr><td><span style="color:#22c55e;font-weight:700">● Green border</span></td><td>No significant issue detected</td></tr>
             <tr><td><span style="color:#94a3b8;font-weight:700">● Grey border</span></td><td>Not enough data — add values manually</td></tr>
-            <tr><td><strong>Confidence %</strong></td><td>Model certainty. Above 70% is reliable.</td></tr>
             <tr><td>${badge('HIGH')}</td><td>Above normal range</td></tr>
             <tr><td>${badge('LOW')}</td><td>Below normal range</td></tr>
             <tr><td>${badge('NORMAL')}</td><td>Within healthy range</td></tr>
@@ -1469,7 +1551,7 @@ function renderManual(){
     <div class="about-card">
       <div class="about-head"><div class="about-icon">🔧</div><h2>Pipeline Page</h2></div>
       <div class="about-body"><div class="step-list">
-        ${[['<strong>Airflow</strong> — Login: <code style="background:#f4f3ef;padding:1px 6px;border-radius:4px">admin / admin</code>. If CSRF error: open Airflow tab, log in, then return.'],['<strong>MLflow</strong> — Compare training experiments, view AUC & F1, and see which model version is in Production.'],['<strong>Grafana</strong> — Live prediction rate, latency, and drift alerts.'],['<strong>Run log</strong> on the Pipeline page shows last 5 runs with status, duration, and whether retraining was triggered.']].map(([t],i)=>`<div class="step"><div class="step-num">${i+1}</div><div>${t}</div></div>`).join('')}
+        ${[['<strong>Airflow</strong> — Login to see the pipeline status and DAGs'],['<strong>MLflow</strong> — Compare training experiments, view AUC & F1, and see which model version is in Production.'],['<strong>Grafana</strong> — Live prediction rate, latency, and drift alerts.'],['<strong>Run log</strong> on the Pipeline page shows last 5 runs with status and whether retraining was triggered.']].map(([t],i)=>`<div class="step"><div class="step-num">${i+1}</div><div>${t}</div></div>`).join('')}
       </div></div>
     </div>
     <div class="about-card" style="border-left:4px solid #d97706">
@@ -1512,31 +1594,18 @@ function handleFile(e){const f=e.target.files[0];if(f&&f.type==='application/pdf
 function handleDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf'){state.uploadedFile=f;render();}}
 function updateField(k, v) {
   const n = parseFloat(v);
-
   if (v.trim() === '' || isNaN(n)) {
     delete state.manualFields[k];
   } else {
     state.manualFields[k] = n;
   }
-
   const filled = Object.keys(state.manualFields).length;
-
   const countEl = document.getElementById('manual-count');
   const hintEl  = document.getElementById('manual-hint');
   const btn     = document.getElementById('manual-analyse-btn');
-
-  if (countEl) {
-    countEl.style.display = filled > 0 ? 'inline-flex' : 'none';
-    countEl.textContent = `✓ ${filled} value${filled === 1 ? '' : 's'} entered`;
-  }
-
-  if (hintEl) {
-    hintEl.style.display = filled > 0 ? 'none' : 'inline';
-  }
-
-  if (btn) {
-    btn.disabled = filled === 0 || state.loading;
-  }
+  if (countEl) { countEl.style.display = filled > 0 ? 'inline-flex' : 'none'; countEl.textContent = `✓ ${filled} value${filled === 1 ? '' : 's'} entered`; }
+  if (hintEl)  { hintEl.style.display = filled > 0 ? 'none' : 'inline'; }
+  if (btn)     { btn.disabled = filled === 0 || state.loading; }
 }
 function newAnalysis(){state.result=null;state.uploadedFile=null;state.manualFields={};state.error=null;navigate('home');}
 
@@ -1551,11 +1620,20 @@ function render(){
     case 'manual':   c.innerHTML=renderManual();   break;
     case 'about':    c.innerHTML=renderAbout();    break;
   }
+  // Add the sidebar footer id after each render (it's in the static HTML)
 }
 
 render();
 checkBackend().then(render);
 setInterval(checkBackend, 30000);
+
+// Add id to sb-footer after initial render (static element)
+document.querySelector('.sb-footer') && (document.querySelector('.sb-footer').id = 'sb-footer-area');
+
+// Start tour after everything settles
+setTimeout(() => {
+  initTour();
+}, 700);
 
 // Simulate live latency ticks every 8s when on pipeline page
 setInterval(() => {
@@ -1572,4 +1650,3 @@ setInterval(() => {
 </script>
 </body>
 </html>
-
