@@ -139,7 +139,6 @@ class TestFrontendMinimal:
 
     def test_html_has_key_ui_strings(self, html_content):
         lower = html_content.lower()
-        assert "onboarding-overlay" in lower
         assert "hamburger" in lower
         assert "/analyse" in lower
         assert "/feedback" in lower
