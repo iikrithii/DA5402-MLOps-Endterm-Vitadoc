@@ -45,7 +45,7 @@ Roll Number: DA25S009
 | Document | Link | Description |
 |---|---|---|
 | Project Report | [`Report.pdf`](Report.pdf) | Full end-term project report |
-| Demo Video | [Google Drive Link](#) | End-to-end walkthrough video |
+| Demo Video | [Google Drive Link](https://drive.google.com/file/d/1SDy3vtgtA5Mr-C8wLZnoNccghNY9JGgh/view?usp=sharing) | End-to-end walkthrough video |
 | Architecture Diagram | [`gallery/detailedarchitecture.png`](gallery/detailed_architecture.png) | Full system architecture |
 | High-Level Design | [`docs/hld.md`](docs/hld.md) | Architecture, design paradigm, success metrics |
 | Low-Level Design | [`docs/lld.md`](docs/lld.md) | All API endpoints with I/O schemas |
